@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KLUTZ – LIVE INFO</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Bebas+Neue&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #FF1A1A;
+    --yellow: #FFE600;
+    --black: #0a0a0a;
+    --white: #f0ede8;
+    --gray: #1a1a1a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background-color: var(--black);
+    color: var(--white);
+    font-family: 'Noto Sans JP', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  /* noise overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.4;
+  }
+
+  /* diagonal stripe bg */
+  .bg-stripes {
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      -55deg,
+      transparent,
+      transparent 40px,
+      rgba(255,26,26,0.03) 40px,
+      rgba(255,26,26,0.03) 41px
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 0 60px;
+  }
+
+  /* header */
+  .header {
+    padding: 40px 24px 0;
+    position: relative;
+  }
+
+  .header-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  .band-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(72px, 22vw, 110px);
+    line-height: 0.85;
+    letter-spacing: -2px;
+    color: var(--white);
+    position: relative;
+    animation: glitch 6s infinite;
+  }
+
+  .band-name::after {
+    content: 'KLUTZ';
+    position: absolute;
+    left: 3px;
+    top: 2px;
+    color: var(--red);
+    clip-path: polygon(0 30%, 100% 30%, 100% 50%, 0 50%);
+    animation: glitch-red 6s infinite 0.3s;
+    pointer-events: none;
+  }
+
+  @keyframes glitch {
+    0%, 92%, 100% { transform: none; }
+    93% { transform: translateX(-2px); }
+    94% { transform: translateX(2px); }
+    95% { transform: none; }
+    96% { transform: translateX(-1px) skewX(1deg); }
+    97% { transform: none; }
+  }
+
+  @keyframes glitch-red {
+    0%, 92%, 100% { opacity: 0; }
+    93%, 97% { opacity: 1; }
+    94% { transform: translateX(4px); }
+    96% { transform: translateX(-3px); }
+  }
+
+  .live-badge {
+    background: var(--red);
+    color: var(--white);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 3px;
+    padding: 6px 12px;
+    margin-top: 8px;
+    transform: rotate(2deg);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255,26,26,0.6); }
+    50% { box-shadow: 0 0 0 8px rgba(255,26,26,0); }
+  }
+
+  .divider {
+    height: 3px;
+    background: var(--red);
+    margin: 20px 24px 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .divider::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 60%;
+    height: 100%;
+    background: var(--yellow);
+    animation: slide 2.5s linear infinite;
+  }
+
+  @keyframes slide {
+    to { left: 200%; }
+  }
+
+  /* main card */
+  .main-card {
+    margin: 28px 24px 0;
+    border: 2px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.03);
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .main-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--red);
+  }
+
+  .next-live-label {
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--red);
+    font-weight: 700;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+
+  .date-block {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .date-main {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 16vw, 80px);
+    line-height: 1;
+    color: var(--yellow);
+    letter-spacing: -1px;
+  }
+
+  .date-day {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: rgba(255,255,255,0.5);
+    padding-bottom: 6px;
+  }
+
+  .venue-block {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .venue-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+
+  .venue-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 34px;
+    letter-spacing: 1px;
+    color: var(--white);
+    line-height: 1.1;
+  }
+
+  .venue-city {
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+    margin-top: 3px;
+    letter-spacing: 1px;
+  }
+
+  /* info row */
+  .info-row {
+    display: flex;
+    gap: 12px;
+    margin: 16px 24px 0;
+  }
+
+  .info-chip {
+    flex: 1;
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 14px 16px;
+    background: rgba(255,255,255,0.02);
+    text-align: center;
+  }
+
+  .info-chip-label {
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.35);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .info-chip-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    color: var(--white);
+    letter-spacing: 1px;
+  }
+
+  /* cta */
+  .cta {
+    margin: 28px 24px 0;
+    background: var(--red);
+    padding: 18px;
+    text-align: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 4px;
+    color: var(--white);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.1s;
+    border: none;
+    width: calc(100% - 48px);
+    display: block;
+  }
+
+  .cta::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: rgba(255,255,255,0.15);
+    transform: skewX(-20deg);
+    transition: left 0.4s;
+  }
+
+  .cta:hover::before { left: 150%; }
+  .cta:active { transform: scale(0.98); }
+
+  /* set list tease */
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: rgba(255,255,255,0.3);
+    text-transform: uppercase;
+    padding: 28px 24px 12px;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0 24px;
+  }
+
+  .tag {
+    font-size: 11px;
+    letter-spacing: 2px;
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 6px 12px;
+    color: rgba(255,255,255,0.5);
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  /* footer */
+  .footer {
+    margin-top: 48px;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer-band {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 4px;
+    color: rgba(255,255,255,0.2);
+  }
+
+  .footer-ig {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.25);
+  }
+
+  /* scratch marks deco */
+  .scratch {
+    position: absolute;
+    opacity: 0.06;
+    pointer-events: none;
+  }
+
+  /* countdown */
+  .countdown {
+    margin: 16px 24px 0;
+    display: flex;
+    gap: 0;
+    border: 1px solid rgba(255,26,26,0.3);
+  }
+
+  .cd-unit {
+    flex: 1;
+    text-align: center;
+    padding: 14px 8px;
+    border-right: 1px solid rgba(255,26,26,0.2);
+  }
+
+  .cd-unit:last-child { border-right: none; }
+
+  .cd-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    color: var(--red);
+    line-height: 1;
+    display: block;
+  }
+
+  .cd-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.3);
+    text-transform: uppercase;
+    margin-top: 3px;
+    display: block;
+  }
+</style>
+</head>
+<body>
+<div class="bg-stripes"></div>
+
+<div class="container">
+  <div class="header">
+    <div class="header-top">
+      <div class="band-name">KLUTZ</div>
+      <div class="live-badge">▶ NEXT LIVE</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="main-card">
+    <div class="next-live-label">◆ UPCOMING SHOW</div>
+    <div class="date-block">
+      <div class="date-main">5.30</div>
+      <div class="date-day">FRI</div>
+    </div>
+
+    <div class="venue-block">
+      <div class="venue-label">◆ VENUE</div>
+      <div class="venue-name">静岡 Sunash</div>
+      <div class="venue-city">Shizuoka, Japan</div>
+    </div>
+  </div>
+
+  <div class="info-row">
+    <div class="info-chip">
+      <div class="info-chip-label">開場</div>
+      <div class="info-chip-value">OPEN</div>
+    </div>
+    <div class="info-chip">
+      <div class="info-chip-label">開演</div>
+      <div class="info-chip-value">START</div>
+    </div>
+    <div class="info-chip">
+      <div class="info-chip-label">料金</div>
+      <div class="info-chip-value">—</div>
+    </div>
+  </div>
+
+  <div class="section-label">◆ COUNTDOWN</div>
+  <div class="countdown">
+    <div class="cd-unit">
+      <span class="cd-num" id="cd-days">—</span>
+      <span class="cd-label">Days</span>
+    </div>
+    <div class="cd-unit">
+      <span class="cd-num" id="cd-hours">—</span>
+      <span class="cd-label">Hours</span>
+    </div>
+    <div class="cd-unit">
+      <span class="cd-num" id="cd-mins">—</span>
+      <span class="cd-label">Mins</span>
+    </div>
+    <div class="cd-unit">
+      <span class="cd-num" id="cd-secs">—</span>
+      <span class="cd-label">Secs</span>
+    </div>
+  </div>
+
+  <button class="cta" onclick="navigator.clipboard?.writeText('静岡Sunash 5月30日 KLUTZ LIVE')">
+    ▶ SAVE THE DATE
+  </button>
+
+  <div class="section-label">◆ GENRE</div>
+  <div class="tags">
+    <div class="tag">Rock</div>
+    <div class="tag">Punk</div>
+    <div class="tag">Live</div>
+    <div class="tag">Shizuoka</div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-band">KLUTZ</div>
+    <div class="footer-ig">Instagram でフォロー</div>
+  </div>
+</div>
+
+<script>
+  const target = new Date('2025-05-30T19:00:00');
+
+  function updateCountdown() {
+    const now = new Date();
+    const diff = target - now;
+    if (diff <= 0) {
+      document.getElementById('cd-days').textContent = '0';
+      document.getElementById('cd-hours').textContent = '0';
+      document.getElementById('cd-mins').textContent = '0';
+      document.getElementById('cd-secs').textContent = '0';
+      return;
+    }
+    const days  = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const mins  = Math.floor((diff % 3600000) / 60000);
+    const secs  = Math.floor((diff % 60000) / 1000);
+    document.getElementById('cd-days').textContent  = String(days).padStart(2,'0');
+    document.getElementById('cd-hours').textContent = String(hours).padStart(2,'0');
+    document.getElementById('cd-mins').textContent  = String(mins).padStart(2,'0');
+    document.getElementById('cd-secs').textContent  = String(secs).padStart(2,'0');
+  }
+
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+</script>
+</body>
+</html>
