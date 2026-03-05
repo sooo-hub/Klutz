@@ -316,6 +316,62 @@
     text-align: center; padding: 24px 0; text-transform: uppercase;
   }
 
+  /* BAND INFO */
+  .band-info-section { margin: 0 24px; display: flex; flex-direction: column; gap: 16px; }
+
+  .band-info-card {
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.02);
+    padding: 20px 20px 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .band-info-card::before {
+    content: ''; position: absolute; left: 0; top: 0;
+    width: 3px; height: 100%; background: var(--red);
+  }
+  .band-info-card.clutz-card::before { background: var(--blue); }
+
+  .bic-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px; letter-spacing: 2px;
+    color: var(--white); margin-bottom: 6px;
+  }
+  .clutz-card .bic-name { color: #7dd3fc; }
+
+  .bic-desc {
+    font-size: 11px; color: rgba(255,255,255,0.4);
+    line-height: 1.7; margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .bic-members { display: flex; flex-direction: column; gap: 6px; }
+
+  .bic-member {
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 10px;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.02);
+  }
+
+  .bic-part {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px; letter-spacing: 2px;
+    color: var(--red); min-width: 52px; flex-shrink: 0;
+  }
+  .clutz-card .bic-part { color: var(--blue); }
+
+  .bic-name-member { font-size: 13px; font-weight: 700; color: var(--white); }
+
+  .bic-ig {
+    margin-left: auto;
+    font-size: 11px; letter-spacing: 1px;
+    color: rgba(255,255,255,0.3);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .bic-ig:hover { color: var(--white); }
+
   /* FOOTER */
   .footer { margin-top: 48px; padding: 24px 24px 0; border-top: 1px solid rgba(255,255,255,0.06); }
   .footer-band { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 4px; color: rgba(255,255,255,0.15); margin-bottom: 14px; }
@@ -366,6 +422,60 @@
     <div class="scroll-wrap">
       <div class="schedule-list" id="past-list"></div>
     </div>
+  </div>
+
+  <!-- BAND INFO -->
+  <div class="section-label">◆ About</div>
+  <div class="band-info-section">
+
+    <div class="band-info-card">
+      <div class="bic-name">Klutz</div>
+      <div class="bic-desc">RIZEやThe BONEZのコピーバンド。<br>静岡を拠点に活動中。</div>
+      <div class="bic-members">
+        <div class="bic-member">
+          <div class="bic-part">Vo.Gt</div>
+          <div class="bic-name-member">トッティ</div>
+          <a class="bic-ig" href="https://instagram.com/syottin" target="_blank">@syottin</a>
+        </div>
+        <div class="bic-member">
+          <div class="bic-part">Gt</div>
+          <div class="bic-name-member">sou</div>
+          <a class="bic-ig" href="https://instagram.com/so__u___" target="_blank">@so__u___</a>
+        </div>
+        <div class="bic-member">
+          <div class="bic-part">Ba</div>
+          <div class="bic-name-member">kiyoshi</div>
+          <a class="bic-ig" href="https://instagram.com/kiyoshi_echizen" target="_blank">@kiyoshi_echizen</a>
+        </div>
+        <div class="bic-member">
+          <div class="bic-part">Dr</div>
+          <div class="bic-name-member">Hayate</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="band-info-card clutz-card">
+      <div class="bic-name">clutz</div>
+      <div class="bic-desc">My Hair is Badのコピーバンド。<br>静岡を拠点に活動中。</div>
+      <div class="bic-members">
+        <div class="bic-member">
+          <div class="bic-part">Vo.Gt</div>
+          <div class="bic-name-member">sou</div>
+          <a class="bic-ig" href="https://instagram.com/so__u___" target="_blank">@so__u___</a>
+        </div>
+        <div class="bic-member">
+          <div class="bic-part">Ba</div>
+          <div class="bic-name-member">kiyoshi</div>
+          <a class="bic-ig" href="https://instagram.com/kiyoshi_echizen" target="_blank">@kiyoshi_echizen</a>
+        </div>
+        <div class="bic-member">
+          <div class="bic-part">Dr</div>
+          <div class="bic-name-member">トッティ</div>
+          <a class="bic-ig" href="https://instagram.com/syottin" target="_blank">@syottin</a>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- FOOTER -->
