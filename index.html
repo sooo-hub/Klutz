@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KLUTZ – LIVE INFO</title>
-<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Bebas+Neue&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+<title>KLUTZ – LIVE SCHEDULE</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
   :root {
     --red: #FF1A1A;
@@ -17,15 +17,13 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    background-color: var(--black);
+    background: var(--black);
     color: var(--white);
     font-family: 'Noto Sans JP', sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
-    cursor: crosshair;
   }
 
-  /* noise overlay */
   body::before {
     content: '';
     position: fixed;
@@ -33,505 +31,397 @@
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
     pointer-events: none;
     z-index: 100;
-    opacity: 0.4;
+    opacity: 0.35;
   }
 
-  /* diagonal stripe bg */
   .bg-stripes {
-    position: fixed;
-    inset: 0;
-    background: repeating-linear-gradient(
-      -55deg,
-      transparent,
-      transparent 40px,
-      rgba(255,26,26,0.03) 40px,
-      rgba(255,26,26,0.03) 41px
-    );
-    pointer-events: none;
-    z-index: 0;
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(-55deg, transparent, transparent 40px, rgba(255,26,26,0.02) 40px, rgba(255,26,26,0.02) 41px);
+    pointer-events: none; z-index: 0;
   }
 
   .container {
-    position: relative;
-    z-index: 1;
-    max-width: 480px;
-    margin: 0 auto;
-    padding: 0 0 60px;
+    position: relative; z-index: 1;
+    max-width: 480px; margin: 0 auto;
+    padding: 0 0 80px;
   }
 
-  /* header */
+  /* HEADER */
   .header {
-    padding: 40px 24px 0;
-    position: relative;
+    padding: 36px 24px 0;
+    display: flex; align-items: flex-end; justify-content: space-between;
   }
 
-  .header-top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-  }
-
-  .band-name {
+  .site-title {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(72px, 22vw, 110px);
-    line-height: 0.85;
-    letter-spacing: -2px;
-    color: var(--white);
-    position: relative;
-    animation: glitch 6s infinite;
+    font-size: clamp(56px, 18vw, 88px);
+    line-height: 0.85; letter-spacing: -2px;
+    color: var(--white); position: relative;
+    animation: glitch 7s infinite;
   }
-
-  .band-name::after {
-    content: 'KLUTZ';
-    position: absolute;
-    left: 3px;
-    top: 2px;
-    color: var(--red);
-    clip-path: polygon(0 30%, 100% 30%, 100% 50%, 0 50%);
-    animation: glitch-red 6s infinite 0.3s;
-    pointer-events: none;
+  .site-title::after {
+    content: 'KLUTZ'; position: absolute; left: 3px; top: 2px;
+    color: var(--red); clip-path: polygon(0 30%, 100% 30%, 100% 50%, 0 50%);
+    animation: glitch-red 7s infinite 0.3s; pointer-events: none;
   }
-
   @keyframes glitch {
-    0%, 92%, 100% { transform: none; }
-    93% { transform: translateX(-2px); }
-    94% { transform: translateX(2px); }
-    95% { transform: none; }
-    96% { transform: translateX(-1px) skewX(1deg); }
-    97% { transform: none; }
+    0%,92%,100%{transform:none} 93%{transform:translateX(-2px)}
+    94%{transform:translateX(2px)} 95%{transform:none}
+    96%{transform:translateX(-1px) skewX(1deg)} 97%{transform:none}
   }
-
   @keyframes glitch-red {
-    0%, 92%, 100% { opacity: 0; }
-    93%, 97% { opacity: 1; }
-    94% { transform: translateX(4px); }
-    96% { transform: translateX(-3px); }
+    0%,92%,100%{opacity:0} 93%,97%{opacity:1}
+    94%{transform:translateX(4px)} 96%{transform:translateX(-3px)}
   }
 
-  .live-badge {
-    background: var(--red);
-    color: var(--white);
+  .sub-link {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 13px;
-    letter-spacing: 3px;
-    padding: 6px 12px;
-    margin-top: 8px;
-    transform: rotate(2deg);
-    animation: pulse 2s ease-in-out infinite;
+    font-size: 13px; letter-spacing: 3px;
+    color: rgba(255,255,255,0.35); text-decoration: none;
+    border: 1px solid rgba(255,255,255,0.15); padding: 5px 10px;
+    margin-bottom: 8px; transition: all 0.2s; display: block;
   }
-
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(255,26,26,0.6); }
-    50% { box-shadow: 0 0 0 8px rgba(255,26,26,0); }
-  }
+  .sub-link:hover { color: var(--red); border-color: var(--red); }
 
   .divider {
-    height: 3px;
-    background: var(--red);
-    margin: 20px 24px 0;
-    position: relative;
-    overflow: hidden;
+    height: 3px; background: var(--red);
+    margin: 20px 24px 0; position: relative; overflow: hidden;
   }
-
   .divider::after {
-    content: '';
-    position: absolute;
-    top: 0; left: -100%;
-    width: 60%;
-    height: 100%;
-    background: var(--yellow);
+    content: ''; position: absolute; top: 0; left: -100%;
+    width: 60%; height: 100%; background: var(--yellow);
     animation: slide 2.5s linear infinite;
   }
+  @keyframes slide { to { left: 200%; } }
 
-  @keyframes slide {
-    to { left: 200%; }
-  }
-
-  /* main card */
-  .main-card {
-    margin: 28px 24px 0;
-    border: 2px solid rgba(255,255,255,0.12);
-    background: rgba(255,255,255,0.03);
-    padding: 28px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .main-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    width: 4px;
-    height: 100%;
-    background: var(--red);
-  }
-
-  .next-live-label {
-    font-size: 10px;
-    letter-spacing: 4px;
-    color: var(--red);
-    font-weight: 700;
-    margin-bottom: 16px;
-    text-transform: uppercase;
-  }
-
-  .date-block {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-    margin-bottom: 6px;
-  }
-
-  .date-main {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(52px, 16vw, 80px);
-    line-height: 1;
-    color: var(--yellow);
-    letter-spacing: -1px;
-  }
-
-  .date-day {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 28px;
-    color: rgba(255,255,255,0.5);
-    padding-bottom: 6px;
-  }
-
-  .venue-block {
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255,255,255,0.1);
-  }
-
-  .venue-label {
-    font-size: 10px;
-    letter-spacing: 3px;
-    color: rgba(255,255,255,0.4);
-    margin-bottom: 6px;
-    text-transform: uppercase;
-  }
-
-  .venue-name {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 34px;
-    letter-spacing: 1px;
-    color: var(--white);
-    line-height: 1.1;
-  }
-
-  .venue-city {
-    font-size: 13px;
-    color: rgba(255,255,255,0.5);
-    margin-top: 3px;
-    letter-spacing: 1px;
-  }
-
-  /* info row */
-  .info-row {
-    display: flex;
-    gap: 12px;
-    margin: 16px 24px 0;
-  }
-
-  .info-chip {
-    flex: 1;
-    border: 1px solid rgba(255,255,255,0.15);
-    padding: 14px 16px;
-    background: rgba(255,255,255,0.02);
-    text-align: center;
-  }
-
-  .info-chip-label {
-    font-size: 9px;
-    letter-spacing: 3px;
-    color: rgba(255,255,255,0.35);
-    text-transform: uppercase;
-    margin-bottom: 6px;
-  }
-
-  .info-chip-value {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 20px;
-    color: var(--white);
-    letter-spacing: 1px;
-  }
-
-  /* cta */
-  .cta {
-    margin: 28px 24px 0;
-    background: var(--red);
-    padding: 18px;
-    text-align: center;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px;
-    letter-spacing: 4px;
-    color: var(--white);
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.1s;
-    border: none;
-    width: calc(100% - 48px);
-    display: block;
-  }
-
-  .cta::before {
-    content: '';
-    position: absolute;
-    top: 0; left: -100%;
-    width: 100%; height: 100%;
-    background: rgba(255,255,255,0.15);
-    transform: skewX(-20deg);
-    transition: left 0.4s;
-  }
-
-  .cta:hover::before { left: 150%; }
-  .cta:active { transform: scale(0.98); }
-
-  /* set list tease */
   .section-label {
-    font-size: 10px;
-    letter-spacing: 4px;
-    color: rgba(255,255,255,0.3);
-    text-transform: uppercase;
+    font-size: 10px; letter-spacing: 4px; color: var(--red);
+    text-transform: uppercase; font-weight: 700;
     padding: 28px 24px 12px;
   }
 
-  .tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 0 24px;
-  }
-
-  .tag {
-    font-size: 11px;
-    letter-spacing: 2px;
-    border: 1px solid rgba(255,255,255,0.2);
-    padding: 6px 12px;
-    color: rgba(255,255,255,0.5);
-    font-weight: 700;
-    text-transform: uppercase;
-  }
-
-  /* footer */
-  .footer {
-    margin-top: 48px;
-    padding: 0 24px;
-  }
-
-  .footer-band {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 18px;
-    letter-spacing: 4px;
-    color: rgba(255,255,255,0.2);
-    margin-bottom: 16px;
-  }
-
-  .footer-ig-label {
-    font-size: 9px;
-    letter-spacing: 3px;
-    color: var(--red);
-    text-transform: uppercase;
-    margin-bottom: 10px;
-    font-weight: 700;
-  }
-
-  .footer-ig-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .footer-ig-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    text-decoration: none;
-    padding: 10px 14px;
+  /* CALENDAR */
+  .calendar-wrap {
+    margin: 0 24px;
     border: 1px solid rgba(255,255,255,0.1);
     background: rgba(255,255,255,0.02);
-    transition: border-color 0.2s, background 0.2s;
   }
 
-  .footer-ig-item:hover {
-    border-color: rgba(255,26,26,0.5);
-    background: rgba(255,26,26,0.05);
+  .cal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,0.08);
   }
 
-  .ig-icon {
-    font-size: 14px;
-    opacity: 0.5;
+  .cal-nav {
+    background: none; border: 1px solid rgba(255,255,255,0.2);
+    color: var(--white); font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px; width: 32px; height: 32px;
+    cursor: pointer; transition: all 0.2s;
   }
+  .cal-nav:hover { border-color: var(--red); color: var(--red); }
 
-  .footer-ig-handle {
+  .cal-month {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 16px;
-    letter-spacing: 2px;
-    color: rgba(255,255,255,0.6);
+    font-size: 22px; letter-spacing: 3px;
   }
 
-  /* scratch marks deco */
-  .scratch {
-    position: absolute;
-    opacity: 0.06;
-    pointer-events: none;
+  .cal-grid {
+    display: grid; grid-template-columns: repeat(7, 1fr);
   }
 
-  /* countdown */
-  .countdown {
-    margin: 16px 24px 0;
-    display: flex;
-    gap: 0;
-    border: 1px solid rgba(255,26,26,0.3);
+  .cal-dow {
+    text-align: center; font-size: 9px; letter-spacing: 2px;
+    color: rgba(255,255,255,0.25); padding: 10px 0 8px; text-transform: uppercase;
+  }
+  .cal-dow:first-child { color: rgba(255,80,80,0.5); }
+  .cal-dow:last-child  { color: rgba(100,150,255,0.4); }
+
+  .cal-day {
+    aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: rgba(255,255,255,0.35);
+    position: relative; cursor: default; transition: background 0.15s;
+  }
+  .cal-day.other-month { color: rgba(255,255,255,0.1); }
+  .cal-day.today { color: var(--white); font-weight: 700; }
+  .cal-day.today::before {
+    content: ''; position: absolute; inset: 4px;
+    border: 1px solid rgba(255,255,255,0.3);
+  }
+  .cal-day.has-live { color: var(--white); cursor: pointer; }
+  .cal-day.has-live::after {
+    content: ''; position: absolute; bottom: 4px;
+    left: 50%; transform: translateX(-50%);
+    width: 4px; height: 4px; background: var(--red); border-radius: 50%;
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%,100%{opacity:1;transform:translateX(-50%) scale(1)}
+    50%{opacity:0.6;transform:translateX(-50%) scale(1.5)}
+  }
+  .cal-day.has-live:hover { background: rgba(255,26,26,0.08); }
+
+  /* POPUP */
+  .popup-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.75); z-index: 200;
+    align-items: center; justify-content: center; padding: 24px;
+  }
+  .popup-overlay.active { display: flex; }
+
+  .popup {
+    background: var(--gray); border: 1px solid rgba(255,26,26,0.4);
+    max-width: 400px; width: 100%; padding: 28px; position: relative;
+    animation: popup-in 0.2s ease;
+  }
+  @keyframes popup-in {
+    from{opacity:0;transform:scale(0.95) translateY(8px)}
+    to{opacity:1;transform:none}
   }
 
-  .cd-unit {
-    flex: 1;
-    text-align: center;
-    padding: 14px 8px;
-    border-right: 1px solid rgba(255,26,26,0.2);
+  .popup-close {
+    position: absolute; top: 12px; right: 12px;
+    background: none; border: none; color: rgba(255,255,255,0.4);
+    font-size: 18px; cursor: pointer;
   }
+  .popup-close:hover { color: var(--red); }
 
-  .cd-unit:last-child { border-right: none; }
-
-  .cd-num {
+  .popup-date {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 32px;
-    color: var(--red);
-    line-height: 1;
-    display: block;
+    font-size: 40px; color: var(--yellow); line-height: 1; margin-bottom: 16px;
   }
 
-  .cd-label {
-    font-size: 9px;
-    letter-spacing: 2px;
-    color: rgba(255,255,255,0.3);
-    text-transform: uppercase;
-    margin-top: 3px;
-    display: block;
+  .popup-field {
+    display: flex; gap: 12px; align-items: baseline;
+    margin-bottom: 8px; padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
   }
+  .popup-field:last-child { border-bottom: none; margin-bottom: 0; }
+  .popup-field-label {
+    font-size: 9px; letter-spacing: 2px; color: rgba(255,255,255,0.3);
+    text-transform: uppercase; min-width: 48px; flex-shrink: 0;
+  }
+  .popup-field-value { font-size: 14px; color: var(--white); font-weight: 700; }
+
+  /* SCHEDULE LIST */
+  .schedule-section { margin: 0 24px; }
+
+  .scroll-wrap {
+    max-height: 320px; overflow-y: auto;
+    scrollbar-width: thin; scrollbar-color: rgba(255,26,26,0.3) transparent;
+  }
+  .scroll-wrap::-webkit-scrollbar { width: 3px; }
+  .scroll-wrap::-webkit-scrollbar-thumb { background: rgba(255,26,26,0.3); }
+
+  .schedule-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .schedule-item {
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.02);
+    padding: 16px 18px; position: relative; overflow: hidden;
+    cursor: pointer; transition: border-color 0.2s, background 0.2s;
+  }
+  .schedule-item::before {
+    content: ''; position: absolute; left: 0; top: 0;
+    width: 3px; height: 100%; background: var(--red);
+  }
+  .schedule-item:hover { border-color: rgba(255,26,26,0.4); background: rgba(255,26,26,0.04); }
+  .schedule-item.past::before { background: rgba(255,255,255,0.15); }
+  .schedule-item.past { opacity: 0.5; }
+
+  .si-top {
+    display: flex; align-items: baseline;
+    justify-content: space-between; margin-bottom: 5px;
+  }
+  .si-date {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px; color: var(--yellow); letter-spacing: 1px;
+  }
+  .schedule-item.past .si-date { color: rgba(255,255,255,0.4); }
+  .si-band { font-size: 10px; letter-spacing: 2px; color: var(--red); font-weight: 700; text-transform: uppercase; }
+  .schedule-item.past .si-band { color: rgba(255,255,255,0.2); }
+  .si-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px; letter-spacing: 2px;
+    color: var(--white); margin-bottom: 3px;
+  }
+  .schedule-item.past .si-title { color: rgba(255,255,255,0.4); }
+  .si-venue { font-size: 12px; color: rgba(255,255,255,0.45); margin-bottom: 3px; }
+  .si-meta { font-size: 11px; color: rgba(255,255,255,0.35); }
+
+  .empty-msg {
+    font-size: 11px; letter-spacing: 2px; color: rgba(255,255,255,0.2);
+    text-align: center; padding: 24px 0; text-transform: uppercase;
+  }
+
+  /* FOOTER */
+  .footer { margin-top: 48px; padding: 24px 24px 0; border-top: 1px solid rgba(255,255,255,0.06); }
+  .footer-band { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 4px; color: rgba(255,255,255,0.15); margin-bottom: 14px; }
+  .footer-ig-label { font-size: 9px; letter-spacing: 3px; color: var(--red); text-transform: uppercase; margin-bottom: 10px; font-weight: 700; }
+  .footer-ig-list { display: flex; flex-direction: column; gap: 6px; }
+  .footer-ig-item { display: flex; align-items: center; gap: 10px; text-decoration: none; padding: 8px 12px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.02); transition: all 0.2s; }
+  .footer-ig-item:hover { border-color: rgba(255,26,26,0.4); background: rgba(255,26,26,0.04); }
+  .ig-icon { font-size: 13px; opacity: 0.4; }
+  .footer-ig-handle { font-family: 'Bebas Neue', sans-serif; font-size: 15px; letter-spacing: 2px; color: rgba(255,255,255,0.5); }
 </style>
 </head>
 <body>
 <div class="bg-stripes"></div>
-
 <div class="container">
+
   <div class="header">
-    <div class="header-top">
-      <div class="band-name">KLUTZ</div>
-      <div class="live-badge">▶ NEXT LIVE</div>
-    </div>
+    <div class="site-title">KLUTZ</div>
+    <a class="sub-link" href="./next.html">▶ NEXT LIVE</a>
   </div>
 
   <div class="divider"></div>
 
-  <div class="main-card">
-    <div class="next-live-label">◆ UPCOMING SHOW</div>
-    <div class="date-block">
-      <div class="date-main">26.5.30</div>
-      <div class="date-day">SAT</div>
+  <!-- CALENDAR -->
+  <div class="section-label">◆ Calendar</div>
+  <div class="calendar-wrap">
+    <div class="cal-header">
+      <button class="cal-nav" id="prev-month">&#8249;</button>
+      <div class="cal-month" id="cal-month-label"></div>
+      <button class="cal-nav" id="next-month">&#8250;</button>
     </div>
+    <div class="cal-grid" id="cal-grid"></div>
+  </div>
 
-    <div class="venue-block">
-      <div class="venue-label">◆ VENUE</div>
-      <div class="venue-name">静岡 Sunash</div>
-      <div class="venue-city">Shizuoka, Japan</div>
+  <!-- UPCOMING -->
+  <div class="section-label">◆ Upcoming Shows</div>
+  <div class="schedule-section">
+    <div class="scroll-wrap">
+      <div class="schedule-list" id="upcoming-list"></div>
     </div>
   </div>
 
-  <div class="info-row">
-    <div class="info-chip">
-      <div class="info-chip-label">開場</div>
-      <div class="info-chip-value">OPEN</div>
-    </div>
-    <div class="info-chip">
-      <div class="info-chip-label">開演</div>
-      <div class="info-chip-value">START</div>
-    </div>
-    <div class="info-chip">
-      <div class="info-chip-label">料金</div>
-      <div class="info-chip-value">—</div>
+  <!-- PAST -->
+  <div class="section-label" style="padding-top:32px;">◆ Past Shows</div>
+  <div class="schedule-section">
+    <div class="scroll-wrap">
+      <div class="schedule-list" id="past-list"></div>
     </div>
   </div>
 
-  <div class="section-label">◆ COUNTDOWN</div>
-  <div class="countdown">
-    <div class="cd-unit">
-      <span class="cd-num" id="cd-days">—</span>
-      <span class="cd-label">Days</span>
-    </div>
-    <div class="cd-unit">
-      <span class="cd-num" id="cd-hours">—</span>
-      <span class="cd-label">Hours</span>
-    </div>
-    <div class="cd-unit">
-      <span class="cd-num" id="cd-mins">—</span>
-      <span class="cd-label">Mins</span>
-    </div>
-    <div class="cd-unit">
-      <span class="cd-num" id="cd-secs">—</span>
-      <span class="cd-label">Secs</span>
-    </div>
-  </div>
-
-  <button class="cta" onclick="navigator.clipboard?.writeText('静岡Sunash 5月30日 KLUTZ LIVE')">
-    ▶ SAVE THE DATE
-  </button>
-
-  <div class="section-label">◆ GENRE</div>
-  <div class="tags">
-    <div class="tag">Rock</div>
-    <div class="tag">Punk</div>
-    <div class="tag">Live</div>
-    <div class="tag">Shizuoka</div>
-  </div>
-
+  <!-- FOOTER -->
   <div class="footer">
     <div class="footer-band">KLUTZ</div>
     <div class="footer-ig-label">◆ Instagram</div>
     <div class="footer-ig-list">
-      <a class="footer-ig-item" href="https://instagram.com/kiyoshi_echizen" target="_blank">
-        <span class="ig-icon">📷</span>
-        <span class="footer-ig-handle">@kiyoshi_echizen</span>
-      </a>
-      <a class="footer-ig-item" href="https://instagram.com/so__u___" target="_blank">
-        <span class="ig-icon">📷</span>
-        <span class="footer-ig-handle">@so__u___</span>
-      </a>
-      <a class="footer-ig-item" href="https://instagram.com/syottin" target="_blank">
-        <span class="ig-icon">📷</span>
-        <span class="footer-ig-handle">@syottin</span>
-      </a>
+      <a class="footer-ig-item" href="https://instagram.com/kiyoshi_echizen" target="_blank"><span class="ig-icon">📷</span><span class="footer-ig-handle">@kiyoshi_echizen</span></a>
+      <a class="footer-ig-item" href="https://instagram.com/so__u___" target="_blank"><span class="ig-icon">📷</span><span class="footer-ig-handle">@so__u___</span></a>
+      <a class="footer-ig-item" href="https://instagram.com/syottin" target="_blank"><span class="ig-icon">📷</span><span class="footer-ig-handle">@syottin</span></a>
     </div>
   </div>
 </div>
 
-<script>
-  const target = new Date('2026-05-30T14:00:00');
+<!-- POPUP -->
+<div class="popup-overlay" id="popup-overlay">
+  <div class="popup">
+    <button class="popup-close" id="popup-close">✕</button>
+    <div class="popup-date" id="popup-date"></div>
+    <div id="popup-body"></div>
+  </div>
+</div>
 
-  function updateCountdown() {
-    const now = new Date();
-    const diff = target - now;
-    if (diff <= 0) {
-      document.getElementById('cd-days').textContent = '0';
-      document.getElementById('cd-hours').textContent = '0';
-      document.getElementById('cd-mins').textContent = '0';
-      document.getElementById('cd-secs').textContent = '0';
-      return;
+<script>
+  let lives = [];
+  let curYear, curMonth;
+
+  fetch('./lives.json')
+    .then(r => r.json())
+    .then(data => {
+      lives = data.sort((a,b) => new Date(a.date) - new Date(b.date));
+      const t = new Date();
+      curYear = t.getFullYear(); curMonth = t.getMonth();
+      renderCalendar(); renderLists();
+    })
+    .catch(() => {
+      document.getElementById('upcoming-list').innerHTML = '<div class="empty-msg">lives.json を読み込めませんでした</div>';
+    });
+
+  const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+  function renderCalendar() {
+    document.getElementById('cal-month-label').textContent =
+      `${curYear} . ${String(curMonth+1).padStart(2,'0')}`;
+
+    const grid = document.getElementById('cal-grid');
+    grid.innerHTML = '';
+    DOW.forEach(d => { const el = document.createElement('div'); el.className='cal-dow'; el.textContent=d; grid.appendChild(el); });
+
+    const today      = new Date(); today.setHours(0,0,0,0);
+    const firstDay   = new Date(curYear, curMonth, 1).getDay();
+    const daysInMon  = new Date(curYear, curMonth+1, 0).getDate();
+    const daysInPrev = new Date(curYear, curMonth, 0).getDate();
+    const liveDates  = new Set(lives.map(l => l.date));
+
+    for (let i=0; i<firstDay; i++) {
+      const el = document.createElement('div');
+      el.className='cal-day other-month';
+      el.textContent = daysInPrev - firstDay + 1 + i;
+      grid.appendChild(el);
     }
-    const days  = Math.floor(diff / 86400000);
-    const hours = Math.floor((diff % 86400000) / 3600000);
-    const mins  = Math.floor((diff % 3600000) / 60000);
-    const secs  = Math.floor((diff % 60000) / 1000);
-    document.getElementById('cd-days').textContent  = String(days).padStart(2,'0');
-    document.getElementById('cd-hours').textContent = String(hours).padStart(2,'0');
-    document.getElementById('cd-mins').textContent  = String(mins).padStart(2,'0');
-    document.getElementById('cd-secs').textContent  = String(secs).padStart(2,'0');
+
+    for (let d=1; d<=daysInMon; d++) {
+      const ds = `${curYear}-${String(curMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const el = document.createElement('div'); el.className='cal-day'; el.textContent=d;
+      const thisDate = new Date(curYear, curMonth, d);
+      if (thisDate.getTime() === today.getTime()) el.classList.add('today');
+      if (liveDates.has(ds)) { el.classList.add('has-live'); el.addEventListener('click', ()=>showPopup(ds)); }
+      grid.appendChild(el);
+    }
+
+    const rem = (firstDay + daysInMon) % 7;
+    for (let d=1; d<=(rem===0?0:7-rem); d++) {
+      const el=document.createElement('div'); el.className='cal-day other-month'; el.textContent=d; grid.appendChild(el);
+    }
   }
 
-  updateCountdown();
-  setInterval(updateCountdown, 1000);
+  document.getElementById('prev-month').onclick = () => { curMonth--; if(curMonth<0){curMonth=11;curYear--;} renderCalendar(); };
+  document.getElementById('next-month').onclick = () => { curMonth++; if(curMonth>11){curMonth=0;curYear++;} renderCalendar(); };
+
+  function showPopup(ds) {
+    const live = lives.find(l => l.date===ds); if(!live) return;
+    const d = new Date(ds+'T00:00:00');
+    document.getElementById('popup-date').textContent =
+      `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+    document.getElementById('popup-body').innerHTML = [
+      {l:'Title', v: live.title || '—'},
+      {l:'Band',  v: live.band},
+      {l:'Venue', v: live.venue},
+      {l:'Open',  v: live.open  || '—'},
+      {l:'Start', v: live.start || '—'},
+      {l:'Price', v: live.price ? `¥${Number(live.price).toLocaleString()}` : '—'},
+      {l:'Memo',  v: live.memo  || '—'},
+    ].map(f=>`<div class="popup-field"><div class="popup-field-label">${f.l}</div><div class="popup-field-value">${f.v}</div></div>`).join('');
+    document.getElementById('popup-overlay').classList.add('active');
+  }
+
+  document.getElementById('popup-close').onclick = closePopup;
+  document.getElementById('popup-overlay').onclick = e => { if(e.target===document.getElementById('popup-overlay')) closePopup(); };
+  function closePopup(){ document.getElementById('popup-overlay').classList.remove('active'); }
+
+  function renderLists() {
+    const today = new Date(); today.setHours(0,0,0,0);
+    const upcoming = lives.filter(l => new Date(l.date+'T00:00:00') >= today);
+    const past     = lives.filter(l => new Date(l.date+'T00:00:00') <  today).reverse();
+    document.getElementById('upcoming-list').innerHTML = upcoming.length ? upcoming.map(l=>itemHTML(l,false)).join('') : '<div class="empty-msg">No upcoming shows</div>';
+    document.getElementById('past-list').innerHTML    = past.length     ? past.map(l=>itemHTML(l,true)).join('')     : '<div class="empty-msg">No past shows</div>';
+    document.querySelectorAll('.schedule-item').forEach(el => el.addEventListener('click', ()=>showPopup(el.dataset.date)));
+  }
+
+  function itemHTML(live, isPast) {
+    const d = new Date(live.date+'T00:00:00');
+    const dl = `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+    const meta = [live.open?`開場 ${live.open}`:null, live.start?`開演 ${live.start}`:null, live.price?`¥${Number(live.price).toLocaleString()}`:null].filter(Boolean).join('　/　');
+    return `<div class="schedule-item${isPast?' past':''}" data-date="${live.date}">
+      <div class="si-top"><div class="si-date">${dl}</div><div class="si-band">${live.band}</div></div>
+      ${live.title?`<div class="si-title">${live.title}</div>`:''}
+      <div class="si-venue">${live.venue}</div>
+      ${meta?`<div class="si-meta">${meta}</div>`:''}
+      ${live.memo?`<div class="si-meta" style="color:rgba(255,255,255,0.25);margin-top:2px;">${live.memo}</div>`:''}
+    </div>`;
+  }
 </script>
 </body>
 </html>
