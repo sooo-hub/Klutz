@@ -240,6 +240,14 @@
   }
   .next-live-card.band-clutz .nlc-date { color: #7dd3fc; }
   .nlc-title { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px; color: var(--white); margin-bottom: 6px; }
+  .venue-link {
+    color: inherit; text-decoration: none;
+    border-bottom: 1px dashed rgba(255,255,255,0.25);
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .venue-link:hover { color: var(--yellow); border-bottom-color: var(--yellow); }
+  .schedule-item.band-clutz .venue-link:hover { color: #7dd3fc; border-bottom-color: #7dd3fc; }
+
   .nlc-venue { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 8px; }
   .nlc-meta  { font-size: 11px; color: rgba(255,255,255,0.35); letter-spacing: 0.5px; }
   .next-live-empty { margin: 0 24px; padding: 20px; border: 1px solid rgba(255,255,255,0.08); text-align: center; font-size: 11px; letter-spacing: 2px; color: rgba(255,255,255,0.2); text-transform: uppercase; }
@@ -399,6 +407,11 @@
 
   const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
+  function venueLink(venue, cls='') {
+    const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venue)}`;
+    return `<a class="venue-link${cls?' '+cls:''}" href="${url}" target="_blank" onclick="event.stopPropagation()">${venue}</a>`;
+  }
+
   function renderNextLive() {
     const today = new Date(); today.setHours(0,0,0,0);
     const next = lives.find(l => new Date(l.date+'T00:00:00') >= today);
@@ -415,7 +428,7 @@
       <div class="next-live-card${bandClass}" onclick="showPopup('${next.date}')">
         <div class="nlc-date">${dl}</div>
         ${next.title ? `<div class="nlc-title">${next.title}</div>` : ''}
-        <div class="nlc-venue">${next.venue}</div>
+        <div class="nlc-venue">${venueLink(next.venue)}</div>
         ${meta ? `<div class="nlc-meta">${meta}</div>` : ''}
         ${next.memo ? `<div class="nlc-meta" style="margin-top:3px;color:rgba(255,255,255,0.25);">${next.memo}</div>` : ''}
       </div>`;
@@ -473,7 +486,7 @@
     document.getElementById('popup-body').innerHTML = [
       {l:'Title', v: live.title || '—'},
       {l:'Band',  v: live.band},
-      {l:'Venue', v: live.venue},
+      {l:'Venue', v: venueLink(live.venue)},
       {l:'Open',  v: live.open  || '—'},
       {l:'Start', v: live.start || '—'},
       {l:'Price', v: live.price ? live.price : '—'},
@@ -503,7 +516,7 @@
     return `<div class="schedule-item${isPast?' past':''}${bandClass}" data-date="${live.date}">
       <div class="si-top"><div class="si-date">${dl}</div><div class="si-band">${live.band}</div></div>
       ${live.title?`<div class="si-title">${live.title}</div>`:''}
-      <div class="si-venue">${live.venue}</div>
+      <div class="si-venue">${venueLink(live.venue)}</div>
       ${meta?`<div class="si-meta">${meta}</div>`:''}
       ${live.memo?`<div class="si-meta" style="color:rgba(255,255,255,0.25);margin-top:2px;">${live.memo}</div>`:''}
     </div>`;
