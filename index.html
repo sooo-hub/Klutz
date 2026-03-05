@@ -264,8 +264,19 @@
     width: 3px; height: 100%; background: var(--red);
   }
   .schedule-item:hover { border-color: rgba(255,26,26,0.4); background: rgba(255,26,26,0.04); }
-  .schedule-item.past::before { background: rgba(255,255,255,0.15); }
-  .schedule-item.past { opacity: 0.5; }
+  .schedule-item.past::before { background: rgba(255,50,50,0.25); }
+  .schedule-item.past { opacity: 1; }
+  .schedule-item.past .si-date { color: rgba(255,180,180,0.45); }
+  .schedule-item.past .si-band { color: rgba(255,100,100,0.35); }
+  .schedule-item.past .si-title { color: rgba(255,255,255,0.3); }
+  .schedule-item.past .si-venue { color: rgba(255,255,255,0.25); }
+  .schedule-item.past .si-meta  { color: rgba(255,255,255,0.2); }
+  .schedule-item.past { border-color: rgba(255,50,50,0.12); background: rgba(255,26,26,0.02); }
+
+  .schedule-item.past.band-clutz::before { background: rgba(26,100,255,0.25); }
+  .schedule-item.past.band-clutz { border-color: rgba(26,100,255,0.12); background: rgba(26,143,255,0.02); }
+  .schedule-item.past.band-clutz .si-date { color: rgba(120,180,255,0.45); }
+  .schedule-item.past.band-clutz .si-band { color: rgba(80,150,255,0.35); }
 
   .si-top {
     display: flex; align-items: baseline;
