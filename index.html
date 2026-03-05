@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>KLUTZ – LIVE SCHEDULE</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
@@ -118,6 +118,7 @@
     color: var(--white); font-family: 'Bebas Neue', sans-serif;
     font-size: 20px; width: 32px; height: 32px;
     cursor: pointer; transition: all 0.2s;
+    touch-action: manipulation;
   }
   .cal-nav:hover { border-color: var(--red); color: var(--red); }
 
@@ -397,7 +398,7 @@
     }
     const d = new Date(next.date+'T00:00:00');
     const dl = `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
-    const meta = [next.open?`開場 ${next.open}`:null, next.start?`開演 ${next.start}`:null, next.price?`¥${Number(next.price).toLocaleString()}`:null].filter(Boolean).join('　/　');
+    const meta = [next.open?`開場 ${next.open}`:null, next.start?`開演 ${next.start}`:null, next.price?next.price:null].filter(Boolean).join('　/　');
     const bandClass = next.band?.toLowerCase() === 'clutz' ? ' band-clutz' : '';
     area.innerHTML = `
       <div class="next-live-card${bandClass}" onclick="showPopup('${next.date}')">
@@ -464,7 +465,7 @@
       {l:'Venue', v: live.venue},
       {l:'Open',  v: live.open  || '—'},
       {l:'Start', v: live.start || '—'},
-      {l:'Price', v: live.price ? `¥${Number(live.price).toLocaleString()}` : '—'},
+      {l:'Price', v: live.price ? live.price : '—'},
       {l:'Memo',  v: live.memo  || '—'},
     ].map(f=>`<div class="popup-field"><div class="popup-field-label">${f.l}</div><div class="popup-field-value">${f.v}</div></div>`).join('');
     document.getElementById('popup-overlay').classList.add('active');
@@ -486,7 +487,7 @@
   function itemHTML(live, isPast) {
     const d = new Date(live.date+'T00:00:00');
     const dl = `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
-    const meta = [live.open?`開場 ${live.open}`:null, live.start?`開演 ${live.start}`:null, live.price?`¥${Number(live.price).toLocaleString()}`:null].filter(Boolean).join('　/　');
+    const meta = [live.open?`開場 ${live.open}`:null, live.start?`開演 ${live.start}`:null, live.price?live.price:null].filter(Boolean).join('　/　');
     const bandClass = live.band?.toLowerCase() === 'clutz' ? ' band-clutz' : '';
     return `<div class="schedule-item${isPast?' past':''}${bandClass}" data-date="${live.date}">
       <div class="si-top"><div class="si-date">${dl}</div><div class="si-band">${live.band}</div></div>
