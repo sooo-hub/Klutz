@@ -1,42 +1,42 @@
 [
   {
+    "date": "2026-06-20",
+    "title": "HOOK UP",
+    "band": "Klutz",
+    "venue": "静岡騒弦",
+    "open": "17:30",
+    "start": "18:00",
+    "price": "1500 inDrink",
+    "memo": "対バン：HUSKEY"
+  },
+  {
     "date": "2026-05-30",
-    "title": "KLUTZ ONE-MAN LIVE",
+    "title": "街の風景",
     "band": "Klutz",
     "venue": "静岡 Sunash",
-    "open": "18:00",
-    "start": "18:30",
-    "price": "1500",
+    "open": "14:00",
+    "start": "14:30",
+    "price": "1000 + 1Drink",
     "memo": "ワンマン"
   },
   {
-    "date": "2026-07-12",
-    "title": "NOISE SUMMER Vol.3",
-    "band": "Klutz",
-    "venue": "浜松 G-SIDE",
-    "open": "17:30",
-    "start": "18:00",
-    "price": "2000",
-    "memo": "対バン：THE DEAD CATS / Riot Noise"
+    "date": "2026-1-24",
+    "title": "春待ち",
+    "band": "clutz",
+    "venue": "静岡騒弦",
+    "open": "14:00",
+    "start": "14:30",
+    "price": "1500 inDrink",
+    "memo": "対バン：しゅがたまり、andyyama、あさが倶楽部、the fullcourse"
   },
   {
-    "date": "2025-12-20",
-    "title": "年末大爆発 2025",
+    "date": "2025-7-26",
+    "title": "街の風景 Vol.2",
     "band": "Klutz",
     "venue": "静岡 Sunash",
-    "open": "18:00",
-    "start": "18:30",
-    "price": "1500",
-    "memo": "年末ライブ"
-  },
-  {
-    "date": "2025-10-05",
-    "title": "CIRCUIT BREAKER",
-    "band": "Klutz",
-    "venue": "東京 Shibuya CYCLONE",
-    "open": "17:00",
-    "start": "17:30",
-    "price": "2500",
-    "memo": "対バン：STATIC PULSE"
+    "open": "14:00",
+    "start": "14:30",
+    "price": "1000 + 1Drink",
+    "memo": "対バン：クロマニヨンズｺﾋﾟｰ、東京事変(仮)、HUSKEY、モンゴリアンデスアーム、あさが倶楽部"
   }
 ]
