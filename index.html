@@ -8,6 +8,7 @@
 <style>
   :root {
     --red: #FF1A1A;
+    --blue: #1A8FFF;
     --yellow: #FFE600;
     --black: #0a0a0a;
     --white: #f0ede8;
@@ -205,6 +206,43 @@
   /* SCHEDULE LIST */
   .schedule-section { margin: 0 24px; }
 
+  /* NEXT LIVE CARD */
+  .next-live-card {
+    margin: 0 24px;
+    border: 2px solid rgba(255,26,26,0.4);
+    background: rgba(255,26,26,0.04);
+    padding: 20px 22px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .next-live-card:hover { border-color: rgba(255,26,26,0.7); background: rgba(255,26,26,0.08); }
+  .next-live-card.band-clutz { border-color: rgba(26,143,255,0.4); background: rgba(26,143,255,0.04); }
+  .next-live-card.band-clutz:hover { border-color: rgba(26,143,255,0.7); background: rgba(26,143,255,0.08); }
+  .next-live-card::before {
+    content: '◆ NEXT LIVE';
+    position: absolute; top: 0; right: 0;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 10px; letter-spacing: 3px;
+    background: var(--red); color: var(--white);
+    padding: 4px 10px;
+    animation: pulse-badge 2s ease-in-out infinite;
+  }
+  .next-live-card.band-clutz::before { background: var(--blue); }
+  @keyframes pulse-badge { 0%,100%{opacity:1} 50%{opacity:0.7} }
+
+  .nlc-date {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 11vw, 52px);
+    color: var(--yellow); letter-spacing: -1px; line-height: 1; margin-bottom: 4px;
+  }
+  .next-live-card.band-clutz .nlc-date { color: #7dd3fc; }
+  .nlc-title { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px; color: var(--white); margin-bottom: 6px; }
+  .nlc-venue { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 8px; }
+  .nlc-meta  { font-size: 11px; color: rgba(255,255,255,0.35); letter-spacing: 0.5px; }
+  .next-live-empty { margin: 0 24px; padding: 20px; border: 1px solid rgba(255,255,255,0.08); text-align: center; font-size: 11px; letter-spacing: 2px; color: rgba(255,255,255,0.2); text-transform: uppercase; }
+
   .scroll-wrap {
     max-height: 320px; overflow-y: auto;
     scrollbar-width: thin; scrollbar-color: rgba(255,26,26,0.3) transparent;
@@ -248,7 +286,12 @@
   .si-venue { font-size: 12px; color: rgba(255,255,255,0.45); margin-bottom: 3px; }
   .si-meta { font-size: 11px; color: rgba(255,255,255,0.35); }
 
-  .empty-msg {
+  .schedule-item.band-clutz::before { background: var(--blue); }
+  .schedule-item.band-clutz:hover { border-color: rgba(26,143,255,0.4); background: rgba(26,143,255,0.04); }
+  .schedule-item.band-clutz .si-band { color: var(--blue); }
+  .schedule-item.band-clutz .si-date { color: #7dd3fc; }
+  .cal-day.has-live-clutz::after { background: var(--blue) !important; }
+  .cal-day.has-live-clutz:hover { background: rgba(26,143,255,0.08); }
     font-size: 11px; letter-spacing: 2px; color: rgba(255,255,255,0.2);
     text-align: center; padding: 24px 0; text-transform: uppercase;
   }
@@ -270,10 +313,13 @@
 
   <div class="header">
     <div class="site-title">KLUTZ</div>
-    <a class="sub-link" href="./next.html">▶ NEXT LIVE</a>
   </div>
 
   <div class="divider"></div>
+
+  <!-- NEXT LIVE CARD -->
+  <div class="section-label">◆ Next Live</div>
+  <div id="next-live-area"></div>
 
   <!-- CALENDAR -->
   <div class="section-label">◆ Calendar</div>
@@ -333,13 +379,35 @@
       lives = data.sort((a,b) => new Date(a.date) - new Date(b.date));
       const t = new Date();
       curYear = t.getFullYear(); curMonth = t.getMonth();
-      renderCalendar(); renderLists();
+      renderNextLive(); renderCalendar(); renderLists();
     })
     .catch(() => {
       document.getElementById('upcoming-list').innerHTML = '<div class="empty-msg">lives.json を読み込めませんでした</div>';
     });
 
   const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+  function renderNextLive() {
+    const today = new Date(); today.setHours(0,0,0,0);
+    const next = lives.find(l => new Date(l.date+'T00:00:00') >= today);
+    const area = document.getElementById('next-live-area');
+    if (!next) {
+      area.innerHTML = '<div class="next-live-empty">No upcoming shows</div>';
+      return;
+    }
+    const d = new Date(next.date+'T00:00:00');
+    const dl = `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+    const meta = [next.open?`開場 ${next.open}`:null, next.start?`開演 ${next.start}`:null, next.price?`¥${Number(next.price).toLocaleString()}`:null].filter(Boolean).join('　/　');
+    const bandClass = next.band?.toLowerCase() === 'clutz' ? ' band-clutz' : '';
+    area.innerHTML = `
+      <div class="next-live-card${bandClass}" onclick="showPopup('${next.date}')">
+        <div class="nlc-date">${dl}</div>
+        ${next.title ? `<div class="nlc-title">${next.title}</div>` : ''}
+        <div class="nlc-venue">${next.venue}</div>
+        ${meta ? `<div class="nlc-meta">${meta}</div>` : ''}
+        ${next.memo ? `<div class="nlc-meta" style="margin-top:3px;color:rgba(255,255,255,0.25);">${next.memo}</div>` : ''}
+      </div>`;
+  }
 
   function renderCalendar() {
     document.getElementById('cal-month-label').textContent =
@@ -367,7 +435,12 @@
       const el = document.createElement('div'); el.className='cal-day'; el.textContent=d;
       const thisDate = new Date(curYear, curMonth, d);
       if (thisDate.getTime() === today.getTime()) el.classList.add('today');
-      if (liveDates.has(ds)) { el.classList.add('has-live'); el.addEventListener('click', ()=>showPopup(ds)); }
+      if (liveDates.has(ds)) {
+        el.classList.add('has-live');
+        const liveOnDay = lives.find(l => l.date === ds);
+        if (liveOnDay?.band?.toLowerCase() === 'clutz') el.classList.add('has-live-clutz');
+        el.addEventListener('click', ()=>showPopup(ds));
+      }
       grid.appendChild(el);
     }
 
@@ -414,7 +487,8 @@
     const d = new Date(live.date+'T00:00:00');
     const dl = `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
     const meta = [live.open?`開場 ${live.open}`:null, live.start?`開演 ${live.start}`:null, live.price?`¥${Number(live.price).toLocaleString()}`:null].filter(Boolean).join('　/　');
-    return `<div class="schedule-item${isPast?' past':''}" data-date="${live.date}">
+    const bandClass = live.band?.toLowerCase() === 'clutz' ? ' band-clutz' : '';
+    return `<div class="schedule-item${isPast?' past':''}${bandClass}" data-date="${live.date}">
       <div class="si-top"><div class="si-date">${dl}</div><div class="si-band">${live.band}</div></div>
       ${live.title?`<div class="si-title">${live.title}</div>`:''}
       <div class="si-venue">${live.venue}</div>
