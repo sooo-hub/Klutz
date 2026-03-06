@@ -34,9 +34,11 @@
     "title": "街の風景 Vol.2",
     "band": "Klutz",
     "venue": "静岡 Sunash",
+    "public": true,
     "open": "14:00",
     "start": "14:30",
     "price": "¥1000 + 1Drink",
-    "memo": "対バン：クロマニヨンズｺﾋﾟｰ、東京事変(仮)、HUSKEY、モンゴリアンデスアーム、あさが倶楽部"
+    "memo": "対バン：クロマニヨンズｺﾋﾟｰ、東京事変(仮)、HUSKEY、モンゴリアンデスアーム、あさが倶楽部",
+    "flyer": "flyers/2025-07-26.jpeg"
   }
 ]
