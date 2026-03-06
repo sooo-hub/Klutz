@@ -24,10 +24,12 @@
     "title": "春待ち",
     "band": "clutz",
     "venue": "静岡騒弦",
+    "public": true,
     "open": "14:00",
     "start": "14:30",
     "price": "¥1500 inDrink",
-    "memo": "対バン：しゅがたまり、andyyama、あさが倶楽部、the fullcourse"
+    "memo": "対バン：しゅがたまり、andyyama、あさが倶楽部、the fullcourse",
+    "flyer": "flyers/2026-01-24.jpeg"
   },
   {
     "date": "2025-07-26",
