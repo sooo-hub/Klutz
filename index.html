@@ -311,6 +311,8 @@
   .schedule-item.band-clutz .si-date { color: #7dd3fc; }
   .cal-day.has-live-clutz::after { background: var(--blue) !important; }
   .cal-day.has-live-clutz:hover { background: rgba(26,143,255,0.08); }
+
+  .empty-msg {
     font-size: 11px; letter-spacing: 2px; color: rgba(255,255,255,0.2);
     text-align: center; padding: 24px 0; text-transform: uppercase;
   }
@@ -429,7 +431,7 @@
 
     <div class="band-info-card">
       <div class="bic-name">Klutz</div>
-      <div class="bic-desc">高校時代に結成した4ピースバンド。<br>RIZEやThe BONEZをメインでコピー。<br>静岡を拠点に活動中。</div>
+      <div class="bic-desc">RIZEやThe BONEZをメインでコピーしている4ピースバンド。<br>静岡を拠点に活動中。</div>
       <div class="bic-members">
         <div class="bic-member">
           <div class="bic-part">Vo.Gt</div>
@@ -455,7 +457,7 @@
 
     <div class="band-info-card clutz-card">
       <div class="bic-name">clutz</div>
-      <div class="bic-desc">Klutzから派生した3ピースバンド。<br>My Hair is Badをメインでコピー。<br>静岡を拠点に活動中。</div>
+      <div class="bic-desc">Klutzから派生した3ピースバンド。<br>My Hair is Badのメインでコピー。<br>静岡を拠点に活動中。</div>
       <div class="bic-members">
         <div class="bic-member">
           <div class="bic-part">Vo.Gt</div>
@@ -512,7 +514,7 @@
 
   function venueLink(venue, cls='') {
     const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venue)}`;
-    return `<a class="venue-link${cls?' '+cls:''}" href="${url}" target="_blank" onclick="event.stopPropagation()">${venue}</a>`;
+    return `<a class="venue-link${cls?' '+cls:''}" href="${url}" target="_blank" onclick="event.stopPropagation()">📍 ${venue}</a>`;
   }
 
   function renderNextLive() {
