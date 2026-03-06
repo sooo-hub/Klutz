@@ -501,7 +501,7 @@
   fetch('./lives.json')
     .then(r => r.json())
     .then(data => {
-      lives = data.sort((a,b) => new Date(a.date) - new Date(b.date));
+      lives = data.filter(l => l.public !== false).sort((a,b) => new Date(a.date) - new Date(b.date));
       const t = new Date();
       curYear = t.getFullYear(); curMonth = t.getMonth();
       renderNextLive(); renderCalendar(); renderLists();
