@@ -531,6 +531,7 @@
     const bandClass = next.band?.toLowerCase() === 'clutz' ? ' band-clutz' : '';
     area.innerHTML = `
       <div class="next-live-card${bandClass}" onclick="showPopup('${next.date}')">
+        ${next.flyer ? `<img src="https://raw.githubusercontent.com/sooo-hub/Klutz/main/${next.flyer}" style="width:100%;max-height:260px;object-fit:contain;display:block;margin-bottom:12px;border-radius:2px;">` : ''}
         <div class="nlc-date">${dl}</div>
         ${next.title ? `<div class="nlc-title">${next.title}</div>` : ''}
         <div class="nlc-venue">${venueLink(next.venue)}</div>
@@ -588,15 +589,17 @@
     const d = new Date(ds+'T00:00:00');
     document.getElementById('popup-date').textContent =
       `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
-    document.getElementById('popup-body').innerHTML = [
-      {l:'Title', v: live.title || '—'},
-      {l:'Band',  v: live.band},
-      {l:'Venue', v: venueLink(live.venue)},
-      {l:'Open',  v: live.open  || '—'},
-      {l:'Start', v: live.start || '—'},
-      {l:'Price', v: live.price ? live.price : '—'},
-      {l:'Memo',  v: live.memo  || '—'},
-    ].map(f=>`<div class="popup-field"><div class="popup-field-label">${f.l}</div><div class="popup-field-value">${f.v}</div></div>`).join('');
+    document.getElementById('popup-body').innerHTML =
+      (live.flyer ? `<img src="https://raw.githubusercontent.com/sooo-hub/Klutz/main/${live.flyer}" style="width:100%;max-height:300px;object-fit:contain;display:block;margin-bottom:14px;border-radius:2px;">` : '')
+      + [
+        {l:'Title', v: live.title || '—'},
+        {l:'Band',  v: live.band},
+        {l:'Venue', v: venueLink(live.venue)},
+        {l:'Open',  v: live.open  || '—'},
+        {l:'Start', v: live.start || '—'},
+        {l:'Price', v: live.price ? live.price : '—'},
+        {l:'Memo',  v: live.memo  || '—'},
+      ].map(f=>`<div class="popup-field"><div class="popup-field-label">${f.l}</div><div class="popup-field-value">${f.v}</div></div>`).join('');
     document.getElementById('popup-overlay').classList.add('active');
   }
 
