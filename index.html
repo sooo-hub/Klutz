@@ -2,665 +2,1103 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>KLUTZ – LIVE SCHEDULE</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="icon" type="image/svg+xml" href="./favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>SCHEDULE MANAGER — Klutz / clutz</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@300;400;700;900&display=swap" rel="stylesheet">
 <style>
   :root {
-    --red: #FF1A1A;
-    --blue: #1A8FFF;
-    --yellow: #FFE600;
-    --black: #0a0a0a;
-    --white: #f0ede8;
-    --gray: #1a1a1a;
+    --bg: #0c0c0c;
+    --surface: #141414;
+    --border: #242424;
+    --klutz: #e8003a;
+    --clutz: #0066ff;
+    --yellow: #ffd100;
+    --text: #efefef;
+    --muted: #555;
+    --success: #00d97e;
+    --error: #ff3b5c;
+    --warning: #ffa500;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    background: var(--black);
-    color: var(--white);
+    background: var(--bg);
+    color: var(--text);
     font-family: 'Noto Sans JP', sans-serif;
     min-height: 100vh;
-    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  body::before {
-    content: '';
+  /* ── AUTH SCREEN ── */
+  #auth-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .auth-box {
+    width: 100%;
+    max-width: 420px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--klutz);
+    padding: 32px 28px;
+  }
+
+  .auth-eyebrow {
+    font-size: 10px;
+    letter-spacing: 5px;
+    color: var(--klutz);
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .auth-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    letter-spacing: 4px;
+    margin-bottom: 24px;
+    line-height: 1;
+  }
+
+  .auth-title span { color: var(--clutz); }
+
+  .auth-field { margin-bottom: 16px; }
+
+  label {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  input, select {
+    background: #0a0a0a;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    padding: 11px 14px;
+    outline: none;
+    width: 100%;
+    transition: border-color 0.15s;
+    -webkit-appearance: none;
+    border-radius: 0;
+  }
+
+  input:focus, select:focus { border-color: var(--klutz); }
+  input::placeholder { color: var(--muted); }
+  select option { background: #111; }
+
+  .auth-note {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-top: 12px;
+  }
+
+  .auth-note a { color: var(--warning); text-decoration: none; }
+
+  /* ── MAIN APP ── */
+  #app { display: none; }
+
+  header {
+    padding: 24px 20px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .eyebrow {
+    font-size: 9px;
+    letter-spacing: 5px;
+    color: var(--klutz);
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 30px;
+    letter-spacing: 4px;
+    line-height: 1;
+  }
+
+  h1 span { color: var(--clutz); }
+
+  .logout-btn {
+    font-size: 11px;
+    color: var(--muted);
+    background: transparent;
+    border: 1px solid var(--border);
+    padding: 6px 12px;
+    cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
+    touch-action: manipulation;
+    transition: all 0.15s;
+  }
+
+  .logout-btn:hover { border-color: var(--muted); color: var(--text); }
+
+  .wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 18px 16px 100px;
+  }
+
+  /* ── FAB ── */
+  .fab {
+    position: fixed;
+    bottom: 24px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    background: var(--klutz);
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 28px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(232,0,58,0.5);
+    touch-action: manipulation;
+    transition: transform 0.15s, background 0.15s;
+    z-index: 100;
+  }
+
+  .fab:active { transform: scale(0.92); }
+
+  /* ── BOTTOM SHEET ── */
+  .sheet-overlay {
     position: fixed;
     inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    background: rgba(0,0,0,0.75);
+    z-index: 200;
+    opacity: 0;
     pointer-events: none;
-    z-index: 100;
-    opacity: 0.35;
+    transition: opacity 0.25s;
   }
 
-  .bg-stripes {
-    position: fixed; inset: 0;
-    background: repeating-linear-gradient(-55deg, transparent, transparent 40px, rgba(255,26,26,0.02) 40px, rgba(255,26,26,0.02) 41px);
-    pointer-events: none; z-index: 0;
+  .sheet-overlay.open { opacity: 1; pointer-events: all; }
+
+  .sheet {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: #111;
+    border-top: 2px solid var(--klutz);
+    border-radius: 16px 16px 0 0;
+    z-index: 201;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.32,0.72,0,1);
+    max-height: 92vh;
+    overflow-y: auto;
   }
 
-  .container {
-    position: relative; z-index: 1;
-    max-width: 480px; margin: 0 auto;
-    padding: 0 0 80px;
+  .sheet.clutz-sheet { border-top-color: var(--clutz); }
+  .sheet.open { transform: translateY(0); }
+
+  .sheet-handle {
+    width: 40px; height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin: 12px auto 0;
   }
 
-  /* HEADER */
-  .header {
-    padding: 36px 24px 0;
-    display: flex; align-items: flex-end; justify-content: space-between;
+  .sheet-header {
+    padding: 14px 20px 12px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: #111;
+    z-index: 1;
   }
 
-  .site-title {
+  .sheet-title {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(56px, 18vw, 88px);
-    line-height: 0.85; letter-spacing: -2px;
-    color: var(--white); position: relative;
-    animation: glitch 7s infinite;
-  }
-  .site-title::after {
-    content: 'KLUTZ'; position: absolute; left: 3px; top: 2px;
-    color: var(--red); clip-path: polygon(0 30%, 100% 30%, 100% 50%, 0 50%);
-    animation: glitch-red 7s infinite 0.3s; pointer-events: none;
-  }
-  @keyframes glitch {
-    0%,92%,100%{transform:none} 93%{transform:translateX(-2px)}
-    94%{transform:translateX(2px)} 95%{transform:none}
-    96%{transform:translateX(-1px) skewX(1deg)} 97%{transform:none}
-  }
-  @keyframes glitch-red {
-    0%,92%,100%{opacity:0} 93%,97%{opacity:1}
-    94%{transform:translateX(4px)} 96%{transform:translateX(-3px)}
+    font-size: 20px;
+    letter-spacing: 3px;
+    color: var(--klutz);
   }
 
-  .sub-link {
+  .sheet.clutz-sheet .sheet-title { color: var(--clutz); }
+
+  .band-toggle { display: flex; gap: 8px; margin-top: 10px; }
+
+  .band-btn {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 13px; letter-spacing: 3px;
-    color: rgba(255,255,255,0.35); text-decoration: none;
-    border: 1px solid rgba(255,255,255,0.15); padding: 5px 10px;
-    margin-bottom: 8px; transition: all 0.2s; display: block;
+    font-size: 17px;
+    letter-spacing: 3px;
+    padding: 7px 0;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    flex: 1;
+    text-align: center;
+    touch-action: manipulation;
+    transition: all 0.15s;
   }
-  .sub-link:hover { color: var(--red); border-color: var(--red); }
 
-  .divider {
-    height: 3px; background: var(--red);
-    margin: 20px 24px 0; position: relative; overflow: hidden;
+  .band-btn.active-klutz { background: var(--klutz); border-color: var(--klutz); color: #fff; }
+  .band-btn.active-clutz { background: var(--clutz); border-color: var(--clutz); color: #fff; }
+
+  .sheet-body { padding: 14px 20px; }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
   }
-  .divider::after {
-    content: ''; position: absolute; top: 0; left: -100%;
-    width: 60%; height: 100%; background: var(--yellow);
-    animation: slide 2.5s linear infinite;
+
+  .form-row .full { grid-column: span 2; }
+  .form-field { display: flex; flex-direction: column; gap: 5px; }
+
+  .sheet-actions {
+    display: flex;
+    gap: 10px;
+    padding: 4px 20px 0;
+    margin-bottom: 8px;
   }
-  @keyframes slide { to { left: 200%; } }
+
+  .btn {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 15px;
+    letter-spacing: 3px;
+    padding: 13px 20px;
+    border: none;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: all 0.15s;
+    -webkit-appearance: none;
+  }
+
+  .btn:active { transform: scale(0.97); }
+
+  .btn-primary { background: var(--klutz); color: #fff; flex: 1; }
+  .btn-primary.clutz { background: var(--clutz); }
+  .btn-cancel {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    font-size: 13px;
+    padding: 10px 16px;
+  }
+
+  /* ── LOG ── */
+  .log-bar {
+    background: #080808;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--success);
+    padding: 9px 14px;
+    margin-bottom: 16px;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    color: var(--success);
+    min-height: 34px;
+    display: flex;
+    align-items: center;
+  }
+
+  .log-bar.err  { border-left-color: var(--error);   color: var(--error); }
+  .log-bar.warn { border-left-color: var(--warning);  color: var(--warning); }
+  .log-bar.info { border-left-color: #5bc0ff; color: #5bc0ff; }
+
+  /* ── LIST ── */
+  .list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .list-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    letter-spacing: 4px;
+    color: var(--muted);
+  }
+
+  .badge {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    background: var(--klutz);
+    color: #fff;
+    padding: 2px 9px;
+  }
 
   .section-label {
-    font-size: 10px; letter-spacing: 4px; color: var(--red);
-    text-transform: uppercase; font-weight: 700;
-    padding: 28px 24px 12px;
+    font-size: 9px;
+    letter-spacing: 4px;
+    color: var(--muted);
+    text-transform: uppercase;
+    padding: 12px 0 6px;
+    font-weight: 700;
   }
 
-  /* CALENDAR */
-  .calendar-wrap {
-    margin: 0 24px;
-    border: 1px solid rgba(255,255,255,0.1);
-    background: rgba(255,255,255,0.02);
+  .schedule-list { display: flex; flex-direction: column; gap: 2px; }
+
+  .sched-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--klutz);
+    padding: 12px 14px;
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    gap: 12px;
+    align-items: center;
+    animation: fadein 0.25s ease;
   }
 
-  .cal-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,0.08);
-  }
+  .sched-item.clutz { border-left-color: var(--clutz); }
+  .sched-item.past  { opacity: 0.42; }
 
-  .cal-nav {
-    background: none; border: 1px solid rgba(255,255,255,0.2);
-    color: var(--white); font-family: 'Bebas Neue', sans-serif;
-    font-size: 20px; width: 32px; height: 32px;
-    cursor: pointer; transition: all 0.2s;
-    touch-action: manipulation;
-  }
-  .cal-nav:hover { border-color: var(--red); color: var(--red); }
+  @keyframes fadein { from{opacity:0;transform:translateX(-6px)} to{opacity:1;transform:translateX(0)} }
 
-  .cal-month {
+  .item-date { text-align: center; }
+
+  .date-num {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px; letter-spacing: 3px;
+    font-size: 20px;
+    line-height: 1;
+    color: var(--yellow);
   }
 
-  .cal-grid {
-    display: grid; grid-template-columns: repeat(7, 1fr);
+  .sched-item.clutz .date-num { color: #5bc0ff; }
+  .sched-item.past  .date-num { color: var(--muted); }
+
+  .date-mo {
+    font-size: 8px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
   }
 
-  .cal-dow {
-    text-align: center; font-size: 9px; letter-spacing: 2px;
-    color: rgba(255,255,255,0.25); padding: 10px 0 8px; text-transform: uppercase;
-  }
-  .cal-dow:first-child { color: rgba(255,80,80,0.5); }
-  .cal-dow:last-child  { color: rgba(100,150,255,0.4); }
+  .item-info { min-width: 0; cursor: pointer; }
 
-  .cal-day {
-    aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
-    font-size: 12px; color: rgba(255,255,255,0.35);
-    position: relative; cursor: default; transition: background 0.15s;
-  }
-  .cal-day.other-month { color: rgba(255,255,255,0.1); }
-  .cal-day.today { color: var(--white); font-weight: 700; }
-  .cal-day.today::before {
-    content: ''; position: absolute; inset: 4px;
-    border: 1px solid rgba(255,255,255,0.3);
-  }
-  .cal-day.has-live { color: var(--white); cursor: pointer; }
-  .cal-day.has-live::after {
-    content: ''; position: absolute; bottom: 4px;
-    left: 50%; transform: translateX(-50%);
-    width: 4px; height: 4px; background: var(--red); border-radius: 50%;
-    animation: pulse-dot 2s ease-in-out infinite;
-  }
-  @keyframes pulse-dot {
-    0%,100%{opacity:1;transform:translateX(-50%) scale(1)}
-    50%{opacity:0.6;transform:translateX(-50%) scale(1.5)}
-  }
-  .cal-day.has-live:hover { background: rgba(255,26,26,0.08); }
-
-  /* POPUP */
-  .popup-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.75); z-index: 200;
-    align-items: center; justify-content: center; padding: 24px;
-  }
-  .popup-overlay.active { display: flex; }
-
-  .popup {
-    background: var(--gray); border: 1px solid rgba(255,26,26,0.4);
-    max-width: 400px; width: 100%; padding: 28px; position: relative;
-    animation: popup-in 0.2s ease;
-  }
-  .popup.clutz { border-color: rgba(26,143,255,0.4); }
-  @keyframes popup-in {
-    from{opacity:0;transform:scale(0.95) translateY(8px)}
-    to{opacity:1;transform:none}
+  .item-band {
+    font-size: 8px;
+    letter-spacing: 3px;
+    color: var(--klutz);
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 2px;
   }
 
-  .popup-close {
-    position: absolute; top: 12px; right: 12px;
-    background: none; border: none; color: rgba(255,255,255,0.4);
-    font-size: 18px; cursor: pointer;
-  }
-  .popup-close:hover { color: var(--red); }
+  .sched-item.clutz .item-band { color: var(--clutz); }
 
-  .popup-date {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 40px; color: var(--yellow); line-height: 1; margin-bottom: 16px;
-  }
-
-  .popup-field {
-    display: flex; gap: 12px; align-items: baseline;
-    margin-bottom: 8px; padding-bottom: 8px;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-  }
-  .popup-field:last-child { border-bottom: none; margin-bottom: 0; }
-  .popup-field-label {
-    font-size: 9px; letter-spacing: 2px; color: rgba(255,255,255,0.3);
-    text-transform: uppercase; min-width: 48px; flex-shrink: 0;
-  }
-  .popup-field-value { font-size: 14px; color: var(--white); font-weight: 700; }
-
-  /* SCHEDULE LIST */
-  .schedule-section { margin: 0 24px; }
-
-  /* NEXT LIVE CARD */
-  .next-live-card {
-    margin: 0 24px;
-    border: 2px solid rgba(255,26,26,0.4);
-    background: rgba(255,26,26,0.04);
-    padding: 20px 22px;
-    position: relative;
+  .item-title-text {
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
     overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 2px;
+  }
+
+  .item-meta {
+    font-size: 10px;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .item-actions { display: flex; flex-direction: column; gap: 5px; }
+
+  .action-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
     cursor: pointer;
-    transition: border-color 0.2s, background 0.2s;
-  }
-  .next-live-card:hover { border-color: rgba(255,26,26,0.7); background: rgba(255,26,26,0.08); }
-  .next-live-card.band-clutz { border-color: rgba(26,143,255,0.4); background: rgba(26,143,255,0.04); }
-  .next-live-card.band-clutz:hover { border-color: rgba(26,143,255,0.7); background: rgba(26,143,255,0.08); }
-  .next-live-card::before {
-    content: '◆ NEXT LIVE';
-    position: absolute; top: 0; right: 0;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 10px; letter-spacing: 3px;
-    background: var(--red); color: var(--white);
-    padding: 4px 10px;
-    animation: pulse-badge 2s ease-in-out infinite;
-  }
-  .next-live-card.band-clutz::before { background: var(--blue); }
-  @keyframes pulse-badge { 0%,100%{opacity:1} 50%{opacity:0.7} }
-
-  .nlc-date {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(36px, 11vw, 52px);
-    color: var(--yellow); letter-spacing: -1px; line-height: 1; margin-bottom: 4px;
-  }
-  .next-live-card.band-clutz .nlc-date { color: #7dd3fc; }
-  .nlc-title { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px; color: var(--white); margin-bottom: 6px; }
-  .venue-link {
-    color: inherit; text-decoration: none;
-    border-bottom: 1px dashed rgba(255,255,255,0.25);
-    transition: border-color 0.2s, color 0.2s;
-  }
-  .venue-link:hover { color: var(--yellow); border-bottom-color: var(--yellow); }
-  .schedule-item.band-clutz .venue-link:hover { color: #7dd3fc; border-bottom-color: #7dd3fc; }
-
-  .nlc-venue { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 8px; }
-  .nlc-meta  { font-size: 11px; color: rgba(255,255,255,0.35); letter-spacing: 0.5px; }
-  .next-live-empty { margin: 0 24px; padding: 20px; border: 1px solid rgba(255,255,255,0.08); text-align: center; font-size: 11px; letter-spacing: 2px; color: rgba(255,255,255,0.2); text-transform: uppercase; }
-
-  .scroll-wrap {
-    max-height: 320px; overflow-y: auto;
-    scrollbar-width: thin; scrollbar-color: rgba(255,26,26,0.3) transparent;
-  }
-  .scroll-wrap::-webkit-scrollbar { width: 3px; }
-  .scroll-wrap::-webkit-scrollbar-thumb { background: rgba(255,26,26,0.3); }
-
-  .schedule-list { display: flex; flex-direction: column; gap: 8px; }
-
-  .schedule-item {
-    border: 1px solid rgba(255,255,255,0.1);
-    background: rgba(255,255,255,0.02);
-    padding: 16px 18px; position: relative; overflow: hidden;
-    cursor: pointer; transition: border-color 0.2s, background 0.2s;
-  }
-  .schedule-item::before {
-    content: ''; position: absolute; left: 0; top: 0;
-    width: 3px; height: 100%; background: var(--red);
-  }
-  .schedule-item:hover { border-color: rgba(255,26,26,0.4); background: rgba(255,26,26,0.04); }
-  .schedule-item.past::before { background: rgba(255,50,50,0.25); }
-  .schedule-item.past { opacity: 1; }
-  .schedule-item.past .si-date { color: rgba(200,170,80,0.5); }
-  .schedule-item.past .si-band { color: rgba(255,100,100,0.35); }
-  .schedule-item.past .si-title { color: rgba(255,255,255,0.3); }
-  .schedule-item.past .si-venue { color: rgba(255,255,255,0.25); }
-  .schedule-item.past .si-meta  { color: rgba(255,255,255,0.2); }
-  .schedule-item.past { border-color: rgba(255,50,50,0.12); background: rgba(255,26,26,0.02); }
-
-  .schedule-item.past.band-clutz::before { background: rgba(26,100,255,0.25); }
-  .schedule-item.past.band-clutz { border-color: rgba(26,100,255,0.12); background: rgba(26,143,255,0.02); }
-  .schedule-item.past.band-clutz .si-date { color: rgba(120,180,255,0.45); }
-  .schedule-item.past.band-clutz .si-band { color: rgba(80,150,255,0.35); }
-
-  .si-top {
-    display: flex; align-items: baseline;
-    justify-content: space-between; margin-bottom: 5px;
-  }
-  .si-date {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px; color: var(--yellow); letter-spacing: 1px;
-  }
-  .si-band { font-size: 10px; letter-spacing: 2px; color: var(--red); font-weight: 700; text-transform: uppercase; }
-  .si-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 18px; letter-spacing: 2px;
-    color: var(--white); margin-bottom: 3px;
-  }
-  .schedule-item.past .si-title { color: rgba(255,255,255,0.4); }
-  .si-venue { font-size: 12px; color: rgba(255,255,255,0.45); margin-bottom: 3px; }
-  .si-meta { font-size: 11px; color: rgba(255,255,255,0.35); }
-
-  .schedule-item.band-clutz::before { background: var(--blue); }
-  .schedule-item.band-clutz:hover { border-color: rgba(26,143,255,0.4); background: rgba(26,143,255,0.04); }
-  .schedule-item.band-clutz .si-band { color: var(--blue); }
-  .schedule-item.band-clutz .si-date { color: #7dd3fc; }
-  .cal-day.has-live-clutz::after { background: var(--blue) !important; }
-  .cal-day.has-live-clutz:hover { background: rgba(26,143,255,0.08); }
-
-  .empty-msg {
-    font-size: 11px; letter-spacing: 2px; color: rgba(255,255,255,0.2);
-    text-align: center; padding: 24px 0; text-transform: uppercase;
+    padding: 5px 10px;
+    font-size: 11px;
+    font-family: 'Noto Sans JP', sans-serif;
+    touch-action: manipulation;
+    transition: all 0.15s;
+    white-space: nowrap;
   }
 
-  /* BAND INFO */
-  .band-info-section { margin: 0 24px; display: flex; flex-direction: column; gap: 16px; }
+  .action-btn.edit:active { border-color: var(--yellow); color: var(--yellow); }
+  .action-btn.del:active  { border-color: var(--error);  color: var(--error); }
 
-  .band-info-card {
-    border: 1px solid rgba(255,255,255,0.1);
-    background: rgba(255,255,255,0.02);
-    padding: 16px 18px;
-    position: relative;
-    overflow: hidden;
-  }
-  .band-info-card::before {
-    content: ''; position: absolute; left: 0; top: 0;
-    width: 3px; height: 100%; background: var(--red);
-  }
-  .band-info-card.clutz-card::before { background: var(--blue); }
-
-  .bic-name {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 28px; letter-spacing: 2px;
-    color: var(--yellow); margin-bottom: 6px;
-  }
-  .clutz-card .bic-name { color: #7dd3fc; }
-
-  .bic-desc {
-    font-size: 11px; color: rgba(255,255,255,0.4);
-    line-height: 1.7; margin-bottom: 14px;
-    letter-spacing: 0.5px;
+  .empty {
+    text-align: center;
+    padding: 36px 20px;
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
   }
 
-  .bic-members { display: flex; flex-direction: column; gap: 6px; }
-
-  .bic-member {
-    display: flex; align-items: center; gap: 10px;
-    padding: 7px 10px;
-    border: 1px solid rgba(255,255,255,0.06);
-    background: rgba(255,255,255,0.02);
+  .spinner {
+    display: inline-block;
+    width: 11px; height: 11px;
+    border: 2px solid rgba(255,255,255,0.2);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    vertical-align: middle;
+    margin-right: 4px;
   }
 
-  .bic-part {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 13px; letter-spacing: 2px;
-    color: var(--red); min-width: 52px; flex-shrink: 0;
-  }
-  .clutz-card .bic-part { color: var(--blue); }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
-  .bic-name-member { font-size: 13px; font-weight: 700; color: var(--white); }
-
-  .bic-ig {
-    margin-left: auto;
-    font-size: 11px; letter-spacing: 1px;
-    color: rgba(255,255,255,0.3);
-    text-decoration: none;
-    transition: color 0.2s;
-  }
-  .bic-ig:hover { color: var(--white); }
-
-  /* FOOTER */
-  .footer { margin-top: 48px; padding: 24px 24px 0; border-top: 1px solid rgba(255,255,255,0.06); }
-  .footer-band { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 4px; color: rgba(255,255,255,0.15); margin-bottom: 14px; }
-  .footer-ig-label { font-size: 9px; letter-spacing: 3px; color: var(--red); text-transform: uppercase; margin-bottom: 10px; font-weight: 700; }
-  .footer-ig-list { display: flex; flex-direction: column; gap: 6px; }
-  .footer-ig-item { display: flex; align-items: center; gap: 10px; text-decoration: none; padding: 8px 12px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.02); transition: all 0.2s; }
-  .footer-ig-item:hover { border-color: rgba(255,26,26,0.4); background: rgba(255,26,26,0.04); }
-  .ig-icon { font-size: 13px; opacity: 0.4; }
-  .footer-ig-handle { font-family: 'Bebas Neue', sans-serif; font-size: 15px; letter-spacing: 2px; color: rgba(255,255,255,0.5); }
+  ::-webkit-scrollbar { width: 3px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); }
 </style>
 </head>
 <body>
-<div class="bg-stripes"></div>
-<div class="container">
 
-  <div class="header">
-    <div class="site-title">KLUTZ</div>
-  </div>
-
-  <!-- HEADER IMAGE -->
-  <div id="header-image-area"></div>
-
-  <div class="divider"></div>
-
-  <!-- NEXT LIVE CARD -->
-  <div class="section-label">◆ Next Live</div>
-  <div id="next-live-area"></div>
-
-  <!-- CALENDAR -->
-  <div class="section-label">◆ Calendar</div>
-  <div class="calendar-wrap">
-    <div class="cal-header">
-      <button class="cal-nav" id="prev-month">&#8249;</button>
-      <div class="cal-month" id="cal-month-label"></div>
-      <button class="cal-nav" id="next-month">&#8250;</button>
+<!-- ── AUTH SCREEN ── -->
+<div id="auth-screen">
+  <div class="auth-box">
+    <div class="auth-eyebrow">Schedule Manager</div>
+    <div class="auth-title">KLUTZ <span>/</span> clutz</div>
+    <div class="auth-field">
+      <label>GitHub Token</label>
+      <input type="password" id="token-input" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off">
     </div>
-    <div class="cal-grid" id="cal-grid"></div>
-  </div>
-
-  <!-- UPCOMING -->
-  <div class="section-label">◆ Upcoming Shows</div>
-  <div class="schedule-section">
-    <div class="scroll-wrap">
-      <div class="schedule-list" id="upcoming-list"></div>
-    </div>
-  </div>
-
-  <!-- BAND INFO -->
-  <div class="section-label">◆ About</div>
-  <div class="band-info-section" style="margin: 0 24px;">
-
-    <div class="band-info-card">
-      <div id="klutz-about-img"></div>
-      <div class="bic-name">Klutz</div>
-      <div class="bic-desc">高校時代に結成した4ピースバンド。<br>RIZEやThe BONEZをメインでコピー。<br>静岡を拠点に活動中。</div>
-      <div class="bic-members">
-        <div class="bic-member">
-          <div class="bic-part">Vo.Gt</div>
-          <div class="bic-name-member">トッティ</div>
-          <a class="bic-ig" href="https://instagram.com/syottin" target="_blank">@syottin</a>
-        </div>
-        <div class="bic-member">
-          <div class="bic-part">Gt</div>
-          <div class="bic-name-member">sou</div>
-          <a class="bic-ig" href="https://instagram.com/so__u___" target="_blank">@so__u___</a>
-        </div>
-        <div class="bic-member">
-          <div class="bic-part">Ba</div>
-          <div class="bic-name-member">kiyoshi</div>
-          <a class="bic-ig" href="https://instagram.com/kiyoshi_echizen" target="_blank">@kiyoshi_echizen</a>
-        </div>
-        <div class="bic-member">
-          <div class="bic-part">Dr</div>
-          <div class="bic-name-member">Hayate</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="band-info-card clutz-card">
-      <div id="clutz-about-img"></div>
-      <div class="bic-name">clutz</div>
-      <div class="bic-desc">Klutzから派生した3ピースバンド。<br>My Hair is Badのメインでコピー。<br>静岡を拠点に活動中。</div>
-      <div class="bic-members">
-        <div class="bic-member">
-          <div class="bic-part">Vo.Gt</div>
-          <div class="bic-name-member">sou</div>
-          <a class="bic-ig" href="https://instagram.com/so__u___" target="_blank">@so__u___</a>
-        </div>
-        <div class="bic-member">
-          <div class="bic-part">Ba</div>
-          <div class="bic-name-member">kiyoshi</div>
-          <a class="bic-ig" href="https://instagram.com/kiyoshi_echizen" target="_blank">@kiyoshi_echizen</a>
-        </div>
-        <div class="bic-member">
-          <div class="bic-part">Dr</div>
-          <div class="bic-name-member">トッティ</div>
-          <a class="bic-ig" href="https://instagram.com/syottin" target="_blank">@syottin</a>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- PAST -->
-  <div class="section-label" style="padding-top:32px;">◆ Past Shows</div>
-  <div class="schedule-section">
-    <div class="scroll-wrap">
-      <div class="schedule-list" id="past-list"></div>
-    </div>
-  </div>
-
-  <!-- FOOTER -->
-  <div class="footer">
-    <div class="footer-band">KLUTZ / clutz</div>
+    <button class="btn btn-primary" style="width:100%;margin-top:4px;" onclick="doLogin()">▶ ログイン</button>
+    <p class="auth-note">
+      トークンは <a href="https://github.com/settings/tokens/new" target="_blank">GitHub → Settings → Developer settings → Personal access tokens</a> から発行。スコープは <strong>repo</strong> を選択してください。<br>入力したトークンはこのブラウザ内にのみ保存されます。
+    </p>
   </div>
 </div>
 
-<!-- POPUP -->
-<div class="popup-overlay" id="popup-overlay">
-  <div class="popup">
-    <button class="popup-close" id="popup-close">✕</button>
-    <div class="popup-date" id="popup-date"></div>
-    <div id="popup-body"></div>
+<!-- ── MAIN APP ── -->
+<div id="app">
+  <header>
+    <div>
+      <div class="eyebrow">Live Schedule</div>
+      <h1>KLUTZ <span>/</span> clutz</h1>
+    </div>
+    <button class="logout-btn" onclick="doLogout()">ログアウト</button>
+  </header>
+
+  <div class="wrap">
+    <div class="log-bar info" id="log-bar">起動中...</div>
+
+    <!-- ヘッダー画像 -->
+    <div style="margin-bottom:20px;background:var(--surface);border:1px solid var(--border);border-top:2px solid var(--yellow);padding:16px 18px;">
+      <div class="card-title" style="color:var(--yellow);margin-bottom:12px;">🖼 HEADER IMAGE</div>
+      <div id="header-img-preview-wrap" style="display:none;margin-bottom:10px;">
+        <img id="header-img-preview" style="width:100%;max-height:200px;object-fit:contain;background:#0a0a0a;border:1px solid var(--border);">
+      </div>
+      <input type="file" id="header-img-input" accept="image/jpeg,image/jpg,image/png,image/heic,image/heif" style="display:none;" onchange="onHeaderImgSelect(this)">
+      <div style="display:flex;gap:8px;">
+        <button onclick="document.getElementById('header-img-input').click()"
+          style="flex:1;background:#0a0a0a;border:1px dashed var(--border);color:var(--muted);padding:12px;font-family:'Noto Sans JP',sans-serif;font-size:12px;cursor:pointer;"
+          id="header-img-pick-btn">📷 画像を選択</button>
+        <button class="btn" id="header-img-upload-btn" onclick="uploadHeaderImage()"
+          style="background:var(--yellow);color:#000;font-size:13px;padding:10px 18px;display:none;">▲ アップロード</button>
+      </div>
+    </div>
+
+    <!-- About画像 -->
+    <div style="margin-bottom:20px;background:var(--surface);border:1px solid var(--border);border-top:2px solid var(--klutz);padding:16px 18px;">
+      <div class="card-title" style="color:var(--klutz);margin-bottom:12px;">🖼 KLUTZ — ABOUT IMAGE</div>
+      <div id="klutz-about-preview-wrap" style="display:none;margin-bottom:10px;">
+        <img id="klutz-about-preview" style="width:100%;max-height:200px;object-fit:contain;background:#0a0a0a;border:1px solid var(--border);">
+      </div>
+      <input type="file" id="klutz-about-input" accept="image/jpeg,image/jpg,image/png,image/heic,image/heif" style="display:none;" onchange="onAboutImgSelect(this,'klutz')">
+      <div style="display:flex;gap:8px;">
+        <button onclick="document.getElementById('klutz-about-input').click()"
+          style="flex:1;background:#0a0a0a;border:1px dashed var(--border);color:var(--muted);padding:12px;font-family:'Noto Sans JP',sans-serif;font-size:12px;cursor:pointer;"
+          id="klutz-about-pick-btn">📷 画像を選択</button>
+        <button class="btn" id="klutz-about-upload-btn" onclick="uploadAboutImage('klutz')"
+          style="background:var(--klutz);color:#fff;font-size:13px;padding:10px 18px;display:none;">▲ アップロード</button>
+      </div>
+    </div>
+
+    <div style="margin-bottom:20px;background:var(--surface);border:1px solid var(--border);border-top:2px solid var(--clutz);padding:16px 18px;">
+      <div class="card-title" style="color:var(--clutz);margin-bottom:12px;">🖼 clutz — ABOUT IMAGE</div>
+      <div id="clutz-about-preview-wrap" style="display:none;margin-bottom:10px;">
+        <img id="clutz-about-preview" style="width:100%;max-height:200px;object-fit:contain;background:#0a0a0a;border:1px solid var(--border);">
+      </div>
+      <input type="file" id="clutz-about-input" accept="image/jpeg,image/jpg,image/png,image/heic,image/heif" style="display:none;" onchange="onAboutImgSelect(this,'clutz')">
+      <div style="display:flex;gap:8px;">
+        <button onclick="document.getElementById('clutz-about-input').click()"
+          style="flex:1;background:#0a0a0a;border:1px dashed var(--border);color:var(--muted);padding:12px;font-family:'Noto Sans JP',sans-serif;font-size:12px;cursor:pointer;"
+          id="clutz-about-pick-btn">📷 画像を選択</button>
+        <button class="btn" id="clutz-about-upload-btn" onclick="uploadAboutImage('clutz')"
+          style="background:var(--clutz);color:#fff;font-size:13px;padding:10px 18px;display:none;">▲ アップロード</button>
+      </div>
+    </div>
+
+    <div class="list-header">
+      <div class="list-title">SCHEDULES</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span class="badge" id="count-badge">0</span>
+        <button class="btn btn-cancel" style="font-size:11px;padding:5px 12px;" onclick="loadFromGitHub()">↺ 再読込</button>
+      </div>
+    </div>
+
+    <div class="section-label">Upcoming</div>
+    <div class="schedule-list" id="upcoming-list"><div class="empty">読み込み中...</div></div>
+
+    <div class="section-label" style="margin-top:8px;">Past Shows</div>
+    <div class="schedule-list" id="past-list"><div class="empty">—</div></div>
+  </div>
+
+  <button class="fab" onclick="openAddSheet()">＋</button>
+</div>
+
+<!-- ── BOTTOM SHEET ── -->
+<div class="sheet-overlay" id="overlay" onclick="closeSheet()"></div>
+<div class="sheet" id="sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title" id="sheet-title">ADD LIVE</div>
+    <div class="band-toggle">
+      <button class="band-btn active-klutz" id="btn-klutz" onclick="selectBand('Klutz')">Klutz</button>
+      <button class="band-btn" id="btn-clutz" onclick="selectBand('clutz')">clutz</button>
+    </div>
+  </div>
+  <div class="sheet-body">
+    <div class="form-row">
+      <div class="form-field">
+        <label>日付 *</label>
+        <input type="date" id="f-date">
+      </div>
+      <div class="form-field">
+        <label>ライブタイトル *</label>
+        <input type="text" id="f-title" placeholder="街の風景 Vol.3">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-field full">
+        <label>会場 *</label>
+        <input type="text" id="f-venue" placeholder="静岡 Sunash">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-field">
+        <label>開場</label>
+        <input type="time" id="f-open">
+      </div>
+      <div class="form-field">
+        <label>開演</label>
+        <input type="time" id="f-start">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-field full">
+        <label>料金</label>
+        <input type="text" id="f-price" placeholder="1000 + 1Drink">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-field full">
+        <label>メモ（共演者など）</label>
+        <input type="text" id="f-memo" placeholder="対バン：〇〇、△△">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-field full">
+        <label>フライヤー画像</label>
+        <div id="flyer-preview-wrap" style="display:none;margin-bottom:8px;">
+          <img id="flyer-preview" style="width:100%;max-height:200px;object-fit:contain;background:#0a0a0a;border:1px solid var(--border);">
+          <button onclick="removeFlyer()" style="width:100%;background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px;font-family:'Noto Sans JP',sans-serif;font-size:11px;cursor:pointer;margin-top:4px;">✕ 画像を削除</button>
+        </div>
+        <input type="file" id="f-flyer" accept="image/jpeg,image/jpg,image/png,image/heic,image/heif"
+          style="display:none;" onchange="onFlyerSelect(this)">
+        <button onclick="document.getElementById('f-flyer').click()"
+          style="width:100%;background:#0a0a0a;border:1px dashed var(--border);color:var(--muted);padding:14px;font-family:'Noto Sans JP',sans-serif;font-size:12px;cursor:pointer;letter-spacing:1px;"
+          id="flyer-pick-btn">
+          📷 写真フォルダから選択
+        </button>
+      </div>
+      <div class="form-field full">
+        <label>公開設定</label>
+        <div style="display:flex;gap:8px;margin-top:2px;">
+          <button class="action-btn" id="btn-public" onclick="selectPublic(true)" style="flex:1;text-align:center;padding:8px 10px;">✓ 公開</button>
+          <button class="action-btn" id="btn-private" onclick="selectPublic(false)" style="flex:1;text-align:center;padding:8px 10px;">🔒 非公開</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="sheet-actions">
+    <button class="btn btn-primary" id="submit-btn" onclick="submitSchedule()">▲ COMMIT</button>
+    <button class="btn btn-cancel" onclick="closeSheet()">キャンセル</button>
   </div>
 </div>
 
 <script>
-  let lives = [];
-  let curYear, curMonth;
+  const GH_USER      = 'sooo-hub';
+  const GH_TOOL_REPO = 'klutz-admin'; // このツール自体があるリポジトリ
+  const GH_DATA_REPO = 'Klutz';       // lives.json があるリポジトリ
+  const GH_REPO      = GH_DATA_REPO;  // API呼び出しはこちらを使う
+  const GH_PATH      = 'lives.json';
 
-  // ヘッダー画像を読み込む
-  (function loadHeaderImage() {
-    const url = 'https://raw.githubusercontent.com/sooo-hub/Klutz/main/header-image.jpg';
-    const img = new Image();
-    img.onload = () => {
-      const area = document.getElementById('header-image-area');
-      area.innerHTML = `<img src="${url}" style="display:block;width:100%;max-width:432px;margin:0 auto;">`;
-    };
-    img.src = url + '?t=' + Date.now(); // キャッシュ回避
-  })();
+  let token = '';
+  let loadedData = [];
+  let editIndex = null;
+  let currentBand = 'Klutz';
+  let isPublic = true;
+  let flyerFile = null;   // 選択中の画像File
+  let flyerPath = null;   // 既存の画像パス（編集時）
 
-  // About画像を読み込む
-  function loadAboutImage(band, elId) {
-    const url = `https://raw.githubusercontent.com/sooo-hub/Klutz/main/${band}-about.jpg`;
-    const img = new Image();
-    img.onload = () => {
-      document.getElementById(elId).innerHTML =
-        `<img src="${url}" style="display:block;width:100%;margin-bottom:14px;border-radius:2px;">`;
+  function onFlyerSelect(input) {
+    const file = input.files[0];
+    if (!file) return;
+    flyerFile = file;
+    const reader = new FileReader();
+    reader.onload = e => {
+      document.getElementById('flyer-preview').src = e.target.result;
+      document.getElementById('flyer-preview-wrap').style.display = 'block';
+      document.getElementById('flyer-pick-btn').textContent = '📷 画像を変更';
     };
-    img.src = url + '?t=' + Date.now();
+    reader.readAsDataURL(file);
   }
-  loadAboutImage('klutz', 'klutz-about-img');
-  loadAboutImage('clutz', 'clutz-about-img');
 
-  fetch('./lives.json')
-    .then(r => r.json())
-    .then(data => {
-      lives = data.filter(l => l.public !== false).sort((a,b) => new Date(a.date) - new Date(b.date));
-      const t = new Date();
-      curYear = t.getFullYear(); curMonth = t.getMonth();
-      renderNextLive(); renderCalendar(); renderLists();
-    })
-    .catch(() => {
-      document.getElementById('upcoming-list').innerHTML = '<div class="empty-msg">lives.json を読み込めませんでした</div>';
+  function removeFlyer() {
+    flyerFile = null;
+    flyerPath = null;
+    document.getElementById('f-flyer').value = '';
+    document.getElementById('flyer-preview-wrap').style.display = 'none';
+    document.getElementById('flyer-pick-btn').textContent = '📷 写真フォルダから選択';
+  }
+
+  async function uploadFlyer(file, date) {
+    // ファイル名: flyers/YYYY-MM-DD.jpg など
+    const ext = file.name.split('.').pop().toLowerCase().replace('heic','jpg').replace('heif','jpg');
+    const path = `flyers/${date}.${ext}`;
+    const base64 = await new Promise((res, rej) => {
+      const reader = new FileReader();
+      reader.onload = e => res(e.target.result.split(',')[1]);
+      reader.onerror = rej;
+      reader.readAsDataURL(file);
     });
+    // 既存ファイルのSHAを取得（上書き用）
+    let sha = null;
+    try {
+      const r = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${path}`, { headers: ghHeaders() });
+      if (r.ok) sha = (await r.json()).sha;
+    } catch(e) {}
 
-  const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-
-  function venueLink(venue, cls='') {
-    const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venue)}`;
-    return `<a class="venue-link${cls?' '+cls:''}" href="${url}" target="_blank" onclick="event.stopPropagation()">📍 ${venue}</a>`;
+    const body = { message: `flyer: ${date}`, content: base64, branch: 'main' };
+    if (sha) body.sha = sha;
+    const res = await fetch(
+      `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${path}`,
+      { method: 'PUT', headers: ghHeaders(), body: JSON.stringify(body) }
+    );
+    if (!res.ok) throw new Error('フライヤーのアップロードに失敗しました');
+    return path;
   }
 
-  function renderNextLive() {
-    const today = new Date(); today.setHours(0,0,0,0);
-    const next = lives.find(l => new Date(l.date+'T00:00:00') >= today);
-    const area = document.getElementById('next-live-area');
-    if (!next) {
-      area.innerHTML = '<div class="next-live-empty">No upcoming shows</div>';
-      return;
+  function selectPublic(pub) {
+    isPublic = pub;
+    const pBtn = document.getElementById('btn-public');
+    const rBtn = document.getElementById('btn-private');
+    if (pub) {
+      pBtn.style.borderColor = 'var(--success)';
+      pBtn.style.color = 'var(--success)';
+      rBtn.style.borderColor = 'var(--border)';
+      rBtn.style.color = 'var(--muted)';
+    } else {
+      pBtn.style.borderColor = 'var(--border)';
+      pBtn.style.color = 'var(--muted)';
+      rBtn.style.borderColor = 'var(--muted)';
+      rBtn.style.color = 'var(--text)';
     }
-    const d = new Date(next.date+'T00:00:00');
-    const dl = `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
-    const meta = [next.open?`開場 ${next.open}`:null, next.start?`開演 ${next.start}`:null, next.price?next.price:null].filter(Boolean).join('　/　');
-    const bandClass = next.band?.toLowerCase() === 'clutz' ? ' band-clutz' : '';
-    area.innerHTML = `
-      <div class="next-live-card${bandClass}" onclick="showPopup('${next.date}')">
-        ${next.flyer ? `<img src="https://raw.githubusercontent.com/sooo-hub/Klutz/main/${next.flyer}" style="width:100%;max-height:260px;object-fit:contain;display:block;margin-bottom:12px;border-radius:2px;">` : ''}
-        <div class="nlc-date">${dl}</div>
-        ${next.title ? `<div class="nlc-title">${next.title}</div>` : ''}
-        <div class="nlc-venue">${venueLink(next.venue)}</div>
-        ${meta ? `<div class="nlc-meta">${meta}</div>` : ''}
-        ${next.memo ? `<div class="nlc-meta" style="margin-top:3px;color:rgba(255,255,255,0.25);">${next.memo}</div>` : ''}
-      </div>`;
   }
 
-  function renderCalendar() {
-    document.getElementById('cal-month-label').textContent =
-      `${curYear} . ${String(curMonth+1).padStart(2,'0')}`;
+  // ── AUTH ──
+  function doLogin() {
+    const t = document.getElementById('token-input').value.trim();
+    if (!t) { setLog('トークンを入力してください', 'warn'); return; }
+    localStorage.setItem('gh_token', t);
+    token = t;
+    showApp();
+  }
 
-    const grid = document.getElementById('cal-grid');
-    grid.innerHTML = '';
-    DOW.forEach(d => { const el = document.createElement('div'); el.className='cal-dow'; el.textContent=d; grid.appendChild(el); });
+  function doLogout() {
+    localStorage.removeItem('gh_token');
+    token = '';
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('auth-screen').style.display = 'flex';
+    document.getElementById('token-input').value = '';
+  }
 
-    const today      = new Date(); today.setHours(0,0,0,0);
-    const firstDay   = new Date(curYear, curMonth, 1).getDay();
-    const daysInMon  = new Date(curYear, curMonth+1, 0).getDate();
-    const daysInPrev = new Date(curYear, curMonth, 0).getDate();
-    const liveDates  = new Set(lives.map(l => l.date));
+  function showApp() {
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    loadFromGitHub();
+  }
 
-    for (let i=0; i<firstDay; i++) {
-      const el = document.createElement('div');
-      el.className='cal-day other-month';
-      el.textContent = daysInPrev - firstDay + 1 + i;
-      grid.appendChild(el);
+  // ── LOG ──
+  function setLog(msg, type = '') {
+    const el = document.getElementById('log-bar');
+    el.textContent = msg;
+    el.className = 'log-bar' + (type ? ' ' + type : '');
+  }
+
+  // ── GITHUB ──
+  function ghHeaders() {
+    return {
+      Authorization: `token ${token}`,
+      Accept: 'application/vnd.github.v3+json',
+      'Content-Type': 'application/json',
+    };
+  }
+
+  async function loadFromGitHub() {
+    setLog('読み込み中...', 'info');
+    try {
+      const res = await fetch(
+        `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${GH_PATH}`,
+        { headers: ghHeaders() }
+      );
+      if (res.status === 401) { doLogout(); return; }
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const bytes = Uint8Array.from(atob(data.content.replace(/\n/g, '')), c => c.charCodeAt(0));
+      loadedData = JSON.parse(new TextDecoder().decode(bytes));
+      renderList();
+      setLog(`✓ ${loadedData.length}件 読み込み完了`);
+    } catch(e) {
+      setLog(`✗ 読み込み失敗: ${e.message}`, 'err');
+    }
+  }
+
+  async function getFileSHA() {
+    const res = await fetch(
+      `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${GH_PATH}`,
+      { headers: ghHeaders() }
+    );
+    if (!res.ok) return null;
+    return (await res.json()).sha;
+  }
+
+  async function pushData(newData, message) {
+    const sha = await getFileSHA();
+    const json = JSON.stringify(newData, null, 2);
+    const encoded = btoa(String.fromCharCode(...new TextEncoder().encode(json)));
+    const body = { message, content: encoded, branch: 'main' };
+    if (sha) body.sha = sha;
+    const res = await fetch(
+      `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${GH_PATH}`,
+      { method: 'PUT', headers: ghHeaders(), body: JSON.stringify(body) }
+    );
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || `HTTP ${res.status}`);
+    }
+    return newData;
+  }
+
+  // ── SHEET ──
+  function openAddSheet() {
+    editIndex = null;
+    resetForm();
+    selectBand('Klutz');
+    selectPublic(true);
+    document.getElementById('sheet-title').textContent = 'ADD LIVE';
+    document.getElementById('submit-btn').textContent = '▲ COMMIT';
+    openSheet();
+  }
+
+  function openEditSheet(idx) {
+    editIndex = idx;
+    const item = loadedData[idx];
+    selectBand(item.band || 'Klutz');
+    selectPublic(item.public !== false);
+    document.getElementById('f-date').value  = item.date  || '';
+    document.getElementById('f-title').value = item.title || '';
+    document.getElementById('f-venue').value = item.venue || '';
+    document.getElementById('f-open').value  = item.open  || '';
+    document.getElementById('f-start').value = item.start || '';
+    document.getElementById('f-price').value = item.price || '';
+    document.getElementById('f-memo').value  = item.memo  || '';
+    // フライヤー
+    flyerFile = null;
+    flyerPath = item.flyer || null;
+    if (flyerPath) {
+      const url = `https://raw.githubusercontent.com/${GH_USER}/${GH_REPO}/main/${flyerPath}`;
+      document.getElementById('flyer-preview').src = url;
+      document.getElementById('flyer-preview-wrap').style.display = 'block';
+      document.getElementById('flyer-pick-btn').textContent = '📷 画像を変更';
+    } else {
+      removeFlyer();
+    }
+    document.getElementById('sheet-title').textContent = 'EDIT LIVE';
+    document.getElementById('submit-btn').textContent = '▲ UPDATE';
+    openSheet();
+  }
+
+  function openSheet() {
+    document.getElementById('overlay').classList.add('open');
+    document.getElementById('sheet').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeSheet() {
+    document.getElementById('overlay').classList.remove('open');
+    document.getElementById('sheet').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function selectBand(band) {
+    currentBand = band;
+    const sheet = document.getElementById('sheet');
+    const kBtn  = document.getElementById('btn-klutz');
+    const cBtn  = document.getElementById('btn-clutz');
+    const sbtn  = document.getElementById('submit-btn');
+    if (band === 'Klutz') {
+      kBtn.className = 'band-btn active-klutz';
+      cBtn.className = 'band-btn';
+      sheet.classList.remove('clutz-sheet');
+      sbtn.classList.remove('clutz');
+    } else {
+      kBtn.className = 'band-btn';
+      cBtn.className = 'band-btn active-clutz';
+      sheet.classList.add('clutz-sheet');
+      sbtn.classList.add('clutz');
+    }
+  }
+
+  function resetForm() {
+    ['f-date','f-title','f-venue','f-open','f-start','f-price','f-memo']
+      .forEach(id => document.getElementById(id).value = '');
+    removeFlyer();
+  }
+
+  async function submitSchedule() {
+    const date  = document.getElementById('f-date').value;
+    const title = document.getElementById('f-title').value.trim();
+    const venue = document.getElementById('f-venue').value.trim();
+    if (!date || !title || !venue) {
+      setLog('日付・タイトル・会場は必須です', 'warn');
+      closeSheet(); return;
     }
 
-    for (let d=1; d<=daysInMon; d++) {
-      const ds = `${curYear}-${String(curMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-      const el = document.createElement('div'); el.className='cal-day'; el.textContent=d;
-      const thisDate = new Date(curYear, curMonth, d);
-      if (thisDate.getTime() === today.getTime()) el.classList.add('today');
-      if (liveDates.has(ds)) {
-        el.classList.add('has-live');
-        const liveOnDay = lives.find(l => l.date === ds);
-        if (liveOnDay?.band?.toLowerCase() === 'clutz') el.classList.add('has-live-clutz');
-        el.addEventListener('click', ()=>showPopup(ds));
+    const entry = { date, title, band: currentBand, venue, public: isPublic };
+    const open  = document.getElementById('f-open').value;
+    const start = document.getElementById('f-start').value;
+    const price = document.getElementById('f-price').value.trim();
+    const memo  = document.getElementById('f-memo').value.trim();
+    if (open)  entry.open  = open;
+    if (start) entry.start = start;
+    if (price) entry.price = price;
+    if (memo)  entry.memo  = memo;
+
+    const btn = document.getElementById('submit-btn');
+    const isEdit = editIndex !== null;
+    btn.innerHTML = '<span class="spinner"></span>' + (isEdit ? 'UPDATING...' : 'COMMITTING...');
+    btn.disabled = true;
+
+    try {
+      // フライヤーが新たに選択されていたらアップロード
+      if (flyerFile) {
+        setLog('フライヤーをアップロード中...', 'info');
+        flyerPath = await uploadFlyer(flyerFile, date);
       }
-      grid.appendChild(el);
+      if (flyerPath) entry.flyer = flyerPath;
+      let newData;
+      if (isEdit) {
+        newData = [...loadedData];
+        newData[editIndex] = entry;
+      } else {
+        newData = [...loadedData, entry];
+      }
+      newData.sort((a, b) => new Date(b.date) - new Date(a.date));
+      const msg = isEdit
+        ? `edit: ${date} ${title} (${currentBand})`
+        : `add: ${date} ${title} (${currentBand})`;
+      loadedData = await pushData(newData, msg);
+      renderList();
+      setLog(`✓ ${isEdit ? '更新' : '追加'}しました: ${title}`);
+      closeSheet();
+    } catch(e) {
+      setLog(`✗ コミット失敗: ${e.message}`, 'err');
+    } finally {
+      btn.innerHTML = isEdit ? '▲ UPDATE' : '▲ COMMIT';
+      btn.disabled = false;
     }
+  }
 
-    const rem = (firstDay + daysInMon) % 7;
-    for (let d=1; d<=(rem===0?0:7-rem); d++) {
-      const el=document.createElement('div'); el.className='cal-day other-month'; el.textContent=d; grid.appendChild(el);
+  async function deleteEntry(idx) {
+    const item = loadedData[idx];
+    if (!confirm(`「${item.title}」を削除しますか？`)) return;
+    setLog('削除中...', 'info');
+    try {
+      const newData = loadedData.filter((_, i) => i !== idx);
+      loadedData = await pushData(newData, `delete: ${item.date} ${item.title}`);
+      renderList();
+      setLog(`✓ 削除しました: ${item.title}`);
+    } catch(e) {
+      setLog(`✗ 削除失敗: ${e.message}`, 'err');
     }
   }
 
-  document.getElementById('prev-month').onclick = () => { curMonth--; if(curMonth<0){curMonth=11;curYear--;} renderCalendar(); };
-  document.getElementById('next-month').onclick = () => { curMonth++; if(curMonth>11){curMonth=0;curYear++;} renderCalendar(); };
+  // ── RENDER ──
+  const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
 
-  function showPopup(ds) {
-    const live = lives.find(l => l.date===ds); if(!live) return;
-    const d = new Date(ds+'T00:00:00');
-    const isClutz = live.band?.toLowerCase() === 'clutz';
-    document.getElementById('popup-date').textContent =
-      `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
-    document.querySelector('.popup').className = 'popup' + (isClutz ? ' clutz' : '');
-    document.getElementById('popup-body').innerHTML =
-      (live.flyer ? `<img src="https://raw.githubusercontent.com/sooo-hub/Klutz/main/${live.flyer}" style="width:100%;max-height:300px;object-fit:contain;display:block;margin-bottom:14px;border-radius:2px;">` : '')
-      + [
-        {l:'Title', v: live.title || '—'},
-        {l:'Band',  v: live.band},
-        {l:'Venue', v: venueLink(live.venue)},
-        {l:'Open',  v: live.open  || '—'},
-        {l:'Start', v: live.start || '—'},
-        {l:'Price', v: live.price ? live.price : '—'},
-        {l:'Memo',  v: live.memo  || '—'},
-      ].map(f=>`<div class="popup-field"><div class="popup-field-label">${f.l}</div><div class="popup-field-value">${f.v}</div></div>`).join('');
-    document.getElementById('popup-overlay').classList.add('active');
+  function renderList() {
+    const today = new Date().toISOString().split('T')[0];
+    // Upcoming: 近い順（昇順）
+    const upcoming = loadedData.filter(i => i.date >= today).sort((a,b) => a.date.localeCompare(b.date));
+    // Past: 直近が上（降順）
+    const past     = loadedData.filter(i => i.date < today).sort((a,b) => b.date.localeCompare(a.date));
+    document.getElementById('count-badge').textContent = loadedData.length;
+    renderSection('upcoming-list', upcoming, false);
+    renderSection('past-list', past, true);
   }
 
-  document.getElementById('popup-close').onclick = closePopup;
-  document.getElementById('popup-overlay').onclick = e => { if(e.target===document.getElementById('popup-overlay')) closePopup(); };
-  function closePopup(){ document.getElementById('popup-overlay').classList.remove('active'); }
-
-  function renderLists() {
-    const today = new Date(); today.setHours(0,0,0,0);
-    const upcoming = lives.filter(l => new Date(l.date+'T00:00:00') >= today);
-    const past     = lives.filter(l => new Date(l.date+'T00:00:00') <  today).reverse();
-    document.getElementById('upcoming-list').innerHTML = upcoming.length ? upcoming.map(l=>itemHTML(l,false)).join('') : '<div class="empty-msg">No upcoming shows</div>';
-    document.getElementById('past-list').innerHTML    = past.length     ? past.map(l=>itemHTML(l,true)).join('')     : '<div class="empty-msg">No past shows</div>';
-    document.querySelectorAll('.schedule-item').forEach(el => el.addEventListener('click', ()=>showPopup(el.dataset.date)));
+  function renderSection(elId, items, isPast) {
+    const el = document.getElementById(elId);
+    if (!items.length) { el.innerHTML = '<div class="empty">—</div>'; return; }
+    el.innerHTML = items.map(item => {
+      const gIdx = loadedData.indexOf(item);
+      const d = new Date(item.date + 'T00:00:00');
+      const isClutz = item.band === 'clutz';
+      return `
+        <div class="sched-item ${isClutz ? 'clutz' : ''} ${isPast ? 'past' : ''}">
+          <div class="item-date">
+            <div class="date-num">${d.getMonth()+1}.${String(d.getDate()).padStart(2,'0')}</div>
+            <div class="date-mo">${d.getFullYear()}</div>
+          </div>
+          <div class="item-info" onclick="openEditSheet(${gIdx})">
+            <div class="item-band">${item.band || 'Klutz'}${item.public === false ? ' <span style="font-size:9px;background:#333;color:#aaa;padding:1px 6px;letter-spacing:1px;">非公開</span>' : ''}</div>
+            <div class="item-title-text">${item.title || '—'}</div>
+            <div class="item-meta">${item.venue}${item.open ? ' / 開場 '+item.open : ''}${item.price ? ' / '+item.price : ''}</div>
+          </div>
+          <div class="item-actions">
+            <button class="action-btn edit" onclick="openEditSheet(${gIdx})">編集</button>
+            <button class="action-btn del"  onclick="deleteEntry(${gIdx})">削除</button>
+          </div>
+        </div>`;
+    }).join('');
   }
 
-  function itemHTML(live, isPast) {
-    const d = new Date(live.date+'T00:00:00');
-    const dl = `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
-    const meta = [live.open?`開場 ${live.open}`:null, live.start?`開演 ${live.start}`:null, live.price?live.price:null].filter(Boolean).join('　/　');
-    const bandClass = live.band?.toLowerCase() === 'clutz' ? ' band-clutz' : '';
-    return `<div class="schedule-item${isPast?' past':''}${bandClass}" data-date="${live.date}">
-      <div class="si-top"><div class="si-date">${dl}</div><div class="si-band">${live.band}</div></div>
-      ${live.title?`<div class="si-title">${live.title}</div>`:''}
-      <div class="si-venue">${venueLink(live.venue)}</div>
-      ${meta?`<div class="si-meta">${meta}</div>`:''}
-      ${live.memo?`<div class="si-meta" style="color:rgba(255,255,255,0.25);margin-top:2px;">${live.memo}</div>`:''}
-    </div>`;
+  // ── HEADER IMAGE ──
+  let headerImgFile = null;
+
+  function onHeaderImgSelect(input) {
+    const file = input.files[0];
+    if (!file) return;
+    headerImgFile = file;
+    const reader = new FileReader();
+    reader.onload = e => {
+      document.getElementById('header-img-preview').src = e.target.result;
+      document.getElementById('header-img-preview-wrap').style.display = 'block';
+      document.getElementById('header-img-pick-btn').textContent = '📷 画像を変更';
+      document.getElementById('header-img-upload-btn').style.display = 'block';
+    };
+    reader.readAsDataURL(file);
   }
+
+  async function uploadHeaderImage() {
+    if (!headerImgFile) return;
+    const btn = document.getElementById('header-img-upload-btn');
+    btn.innerHTML = '<span class="spinner"></span>';
+    btn.disabled = true;
+    setLog('ヘッダー画像をアップロード中...', 'info');
+    try {
+      const base64 = await new Promise((res, rej) => {
+        const reader = new FileReader();
+        reader.onload = e => res(e.target.result.split(',')[1]);
+        reader.onerror = rej;
+        reader.readAsDataURL(headerImgFile);
+      });
+      // 既存SHAを取得
+      let sha = null;
+      try {
+        const r = await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/header-image.jpg`, { headers: ghHeaders() });
+        if (r.ok) sha = (await r.json()).sha;
+      } catch(e) {}
+      const body = { message: 'update: header image', content: base64, branch: 'main' };
+      if (sha) body.sha = sha;
+      const res = await fetch(
+        `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/header-image.jpg`,
+        { method: 'PUT', headers: ghHeaders(), body: JSON.stringify(body) }
+      );
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      setLog('✓ ヘッダー画像をアップロードしました');
+      headerImgFile = null;
+      btn.style.display = 'none';
+    } catch(e) {
+      setLog(`✗ アップロード失敗: ${e.message}`, 'err');
+    } finally {
+      btn.innerHTML = '▲ アップロード';
+      btn.disabled = false;
+    }
+  }
+
+  // ── ABOUT IMAGE ──
+  const aboutImgFiles = { klutz: null, clutz: null };
+
+  function onAboutImgSelect(input, band) {
+    const file = input.files[0];
+    if (!file) return;
+    aboutImgFiles[band] = file;
+    const reader = new FileReader();
+    reader.onload = e => {
+      document.getElementById(`${band}-about-preview`).src = e.target.result;
+      document.getElementById(`${band}-about-preview-wrap`).style.display = 'block';
+      document.getElementById(`${band}-about-pick-btn`).textContent = '📷 画像を変更';
+      document.getElementById(`${band}-about-upload-btn`).style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function uploadAboutImage(band) {
+    const file = aboutImgFiles[band];
+    if (!file) return;
+    const btn = document.getElementById(`${band}-about-upload-btn`);
+    btn.innerHTML = '<span class="spinner"></span>';
+    btn.disabled = true;
+    setLog(`${band} About画像をアップロード中...`, 'info');
+    try {
+      const base64 = await new Promise((res, rej) => {
+        const reader = new FileReader();
+        reader.onload = e => res(e.target.result.split(',')[1]);
+        reader.onerror = rej;
+        reader.readAsDataURL(file);
+      });
+      const filename = `${band}-about.jpg`;
+      let sha = null;
+      try {
+        const r = await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${filename}`, { headers: ghHeaders() });
+        if (r.ok) sha = (await r.json()).sha;
+      } catch(e) {}
+      const body = { message: `update: ${band} about image`, content: base64, branch: 'main' };
+      if (sha) body.sha = sha;
+      const res = await fetch(
+        `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${filename}`,
+        { method: 'PUT', headers: ghHeaders(), body: JSON.stringify(body) }
+      );
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      setLog(`✓ ${band} About画像をアップロードしました`);
+      aboutImgFiles[band] = null;
+      btn.style.display = 'none';
+    } catch(e) {
+      setLog(`✗ アップロード失敗: ${e.message}`, 'err');
+    } finally {
+      btn.innerHTML = '▲ アップロード';
+      btn.disabled = false;
+    }
+  }
+
+  // ── INIT ──
+  const saved = localStorage.getItem('gh_token');
+  if (saved) { token = saved; showApp(); }
 </script>
 </body>
 </html>
