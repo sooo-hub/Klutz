@@ -508,7 +508,7 @@
     const img = new Image();
     img.onload = () => {
       const area = document.getElementById('header-image-area');
-      area.innerHTML = `<img src="${url}" style="display:block;width:100%;max-width:432px;margin:0 auto;">`;
+      area.innerHTML = `<img src="${url}" style="display:block;width:100%;max-width:480px;margin:0 auto;">`;
     };
     img.src = url + '?t=' + Date.now(); // キャッシュ回避
   })();
