@@ -176,6 +176,7 @@
     max-width: 400px; width: 100%; padding: 28px; position: relative;
     animation: popup-in 0.2s ease;
   }
+  .popup.clutz { border-color: rgba(26,143,255,0.4); }
   @keyframes popup-in {
     from{opacity:0;transform:scale(0.95) translateY(8px)}
     to{opacity:1;transform:none}
@@ -420,14 +421,6 @@
     </div>
   </div>
 
-  <!-- PAST -->
-  <div class="section-label" style="padding-top:32px;">◆ Past Shows</div>
-  <div class="schedule-section">
-    <div class="scroll-wrap">
-      <div class="schedule-list" id="past-list"></div>
-    </div>
-  </div>
-
   <!-- BAND INFO -->
   <div class="section-label">◆ About</div>
   <div class="band-info-section" style="margin: 0 24px;">
@@ -480,6 +473,14 @@
       </div>
     </div>
 
+  </div>
+
+  <!-- PAST -->
+  <div class="section-label" style="padding-top:32px;">◆ Past Shows</div>
+  <div class="schedule-section">
+    <div class="scroll-wrap">
+      <div class="schedule-list" id="past-list"></div>
+    </div>
   </div>
 
   <!-- FOOTER -->
@@ -601,8 +602,10 @@
   function showPopup(ds) {
     const live = lives.find(l => l.date===ds); if(!live) return;
     const d = new Date(ds+'T00:00:00');
+    const isClutz = live.band?.toLowerCase() === 'clutz';
     document.getElementById('popup-date').textContent =
       `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+    document.querySelector('.popup').className = 'popup' + (isClutz ? ' clutz' : '');
     document.getElementById('popup-body').innerHTML =
       (live.flyer ? `<img src="https://raw.githubusercontent.com/sooo-hub/Klutz/main/${live.flyer}" style="width:100%;max-height:300px;object-fit:contain;display:block;margin-bottom:14px;border-radius:2px;">` : '')
       + [
