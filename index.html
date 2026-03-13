@@ -392,6 +392,9 @@
     <div class="site-title">KLUTZ</div>
   </div>
 
+  <!-- HEADER IMAGE -->
+  <div id="header-image-area"></div>
+
   <div class="divider"></div>
 
   <!-- NEXT LIVE CARD -->
@@ -497,6 +500,17 @@
 <script>
   let lives = [];
   let curYear, curMonth;
+
+  // ヘッダー画像を読み込む
+  (function loadHeaderImage() {
+    const url = 'https://raw.githubusercontent.com/sooo-hub/Klutz/main/header-image.jpg';
+    const img = new Image();
+    img.onload = () => {
+      const area = document.getElementById('header-image-area');
+      area.innerHTML = `<img src="${url}" style="display:block;width:100%;max-width:432px;margin:0 auto;">`;
+    };
+    img.src = url + '?t=' + Date.now(); // キャッシュ回避
+  })();
 
   fetch('./lives.json')
     .then(r => r.json())
