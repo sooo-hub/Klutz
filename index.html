@@ -426,6 +426,7 @@
   <div class="band-info-section" style="margin: 0 24px;">
 
     <div class="band-info-card">
+      <div id="klutz-about-img"></div>
       <div class="bic-name">Klutz</div>
       <div class="bic-desc">高校時代に結成した4ピースバンド。<br>RIZEやThe BONEZをメインでコピー。<br>静岡を拠点に活動中。</div>
       <div class="bic-members">
@@ -452,6 +453,7 @@
     </div>
 
     <div class="band-info-card clutz-card">
+      <div id="clutz-about-img"></div>
       <div class="bic-name">clutz</div>
       <div class="bic-desc">Klutzから派生した3ピースバンド。<br>My Hair is Badのメインでコピー。<br>静岡を拠点に活動中。</div>
       <div class="bic-members">
@@ -508,10 +510,23 @@
     const img = new Image();
     img.onload = () => {
       const area = document.getElementById('header-image-area');
-      area.innerHTML = `<img src="${url}" style="display:block;width:100%;max-width:480px;margin:0 auto;">`;
+      area.innerHTML = `<img src="${url}" style="display:block;width:100%;max-width:432px;margin:0 auto;">`;
     };
     img.src = url + '?t=' + Date.now(); // キャッシュ回避
   })();
+
+  // About画像を読み込む
+  function loadAboutImage(band, elId) {
+    const url = `https://raw.githubusercontent.com/sooo-hub/Klutz/main/${band}-about.jpg`;
+    const img = new Image();
+    img.onload = () => {
+      document.getElementById(elId).innerHTML =
+        `<img src="${url}" style="display:block;width:100%;margin-bottom:14px;border-radius:2px;">`;
+    };
+    img.src = url + '?t=' + Date.now();
+  }
+  loadAboutImage('klutz', 'klutz-about-img');
+  loadAboutImage('clutz', 'clutz-about-img');
 
   fetch('./lives.json')
     .then(r => r.json())
