@@ -506,7 +506,7 @@
 
   // ヘッダー画像を読み込む
   (function loadHeaderImage() {
-    const url = 'https://raw.githubusercontent.com/sooo-hub/Klutz/main/header-image.jpg';
+    const url = 'https://raw.githubusercontent.com/sooo-hub/Klutz/main/img/header.jpg';
     const img = new Image();
     img.onload = () => {
       const area = document.getElementById('header-image-area');
@@ -517,7 +517,7 @@
 
   // About画像を読み込む
   function loadAboutImage(band, elId) {
-    const url = `https://raw.githubusercontent.com/sooo-hub/Klutz/main/${band}-about.jpg`;
+    const url = `https://raw.githubusercontent.com/sooo-hub/Klutz/main/img/${band}-about.jpg`;
     const img = new Image();
     img.onload = () => {
       document.getElementById(elId).innerHTML =
