@@ -23,7 +23,7 @@
     "start": "14:30",
     "price": "¥1500 inDrink",
     "memo": "対バン：しゅがたまり、andyyama、あさが倶楽部、the fullcourse",
-    "flyer": "flyers/2026-01-24.jpeg"
+    "flyer": "img/flyers/2026-01-24.jpeg"
   },
   {
     "date": "2025-07-26",
@@ -35,6 +35,6 @@
     "start": "14:30",
     "price": "¥1000 + 1Drink",
     "memo": "対バン：クロマニヨンズｺﾋﾟｰ、東京事変(仮)、HUSKEY、モンゴリアンデスアーム、あさが倶楽部",
-    "flyer": "flyers/2025-07-26.jpeg"
+    "flyer": "img/flyers/2025-07-26.jpeg"
   }
 ]
