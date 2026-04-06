@@ -5,7 +5,11 @@
     "band": "Klutz",
     "venue": "静岡騒弦",
     "public": true,
-    "memo": "対バン：HUSKEY、BOYZ on the RUN andmore..."
+    "open": "14:00",
+    "start": "14:30",
+    "price": "1000 + 1drink",
+    "memo": "対バン：HUSKEY、BOYZ on the RUN andmore...",
+    "flyer": "img/flyers/2026-06-20.jpeg"
   },
   {
     "date": "2026-05-30",
