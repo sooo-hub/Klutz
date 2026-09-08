@@ -11,6 +11,14 @@
     "flyer": "img/flyers/2026-12-05.jpeg"
   },
   {
+    "date": "2026-11-22",
+    "title": "第5回沼津けいおん祭",
+    "band": "Klutz",
+    "venue": "スタジオニ音",
+    "public": false,
+    "start": "12:00"
+  },
+  {
     "date": "2026-08-22",
     "title": "@騒弦　Don't be Quiet!!",
     "band": "Klutz",
