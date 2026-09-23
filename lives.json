@@ -15,8 +15,9 @@
     "title": "第5回沼津けいおん祭",
     "band": "Klutz",
     "venue": "スタジオニ音",
-    "public": false,
-    "start": "12:00"
+    "public": true,
+    "start": "12:00",
+    "flyer": "img/flyers/2026-11-22.jpeg"
   },
   {
     "date": "2026-08-22",
